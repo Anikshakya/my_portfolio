@@ -41,7 +41,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _launch(String url) async {
     final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (await canLaunchUrl(uri))
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   Widget _socialBtn(String label, String url) => GestureDetector(
@@ -72,7 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: HudTextStyles.header(16, color: HudColors.magenta),
                   glowColor: HudColors.magenta),
               const SizedBox(height: 2),
-              Text(label, style: HudTextStyles.mono(8, color: HudColors.textMuted)),
+              Text(label,
+                  style: HudTextStyles.mono(8, color: HudColors.textMuted)),
             ],
           ),
         ),
@@ -96,14 +98,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('PROFILE OVERVIEW // ANIK SHAKYA', style: HudTextStyles.mono(10)),
+                        Text('PROFILE OVERVIEW // ANIK SHAKYA',
+                            style: HudTextStyles.mono(10)),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 7, vertical: 3),
                           decoration: BoxDecoration(
                             color: HudColors.cyan.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(3),
                           ),
-                          child: Text('ID: AS-9610', style: HudTextStyles.mono(9)),
+                          child:
+                              Text('ID: AS-9610', style: HudTextStyles.mono(9)),
                         ),
                       ],
                     ),
@@ -123,8 +128,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               end: Alignment.bottomRight,
                             ),
                             boxShadow: [
-                              BoxShadow(color: HudColors.cyan.withOpacity(0.4), blurRadius: 20),
-                              BoxShadow(color: HudColors.magenta.withOpacity(0.3), blurRadius: 12),
+                              BoxShadow(
+                                  color: HudColors.cyan.withOpacity(0.4),
+                                  blurRadius: 20),
+                              BoxShadow(
+                                  color: HudColors.magenta.withOpacity(0.3),
+                                  blurRadius: 12),
                             ],
                           ),
                           padding: const EdgeInsets.all(3),
@@ -134,7 +143,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               fit: BoxFit.cover,
                               errorBuilder: (_, __, ___) => Container(
                                 color: const Color(0xFF0A0A16),
-                                child: const Icon(Icons.person, color: HudColors.cyan, size: 40),
+                                child: const Icon(Icons.person,
+                                    color: HudColors.cyan, size: 40),
                               ),
                             ),
                           ),
@@ -147,7 +157,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: HudTextStyles.header(22),
                                 glowColor: HudColors.cyan),
                             const SizedBox(height: 4),
-                            Text('FLUTTER DEVELOPER', style: HudTextStyles.mono(11)),
+                            Text('FLUTTER DEVELOPER',
+                                style: HudTextStyles.mono(11)),
                           ],
                         ),
                       ],
@@ -159,7 +170,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       decoration: BoxDecoration(
                         color: const Color(0xD9020208),
                         borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: HudColors.cyan.withOpacity(0.2)),
+                        border:
+                            Border.all(color: HudColors.cyan.withOpacity(0.2)),
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,14 +179,18 @@ class _HomeScreenState extends State<HomeScreen> {
                           Expanded(
                             child: Text(
                               _typedText,
-                              style: HudTextStyles.mono(11.5, color: HudColors.textMain)
+                              style: HudTextStyles.mono(11.5,
+                                      color: HudColors.textMain)
                                   .copyWith(height: 1.6),
                             ),
                           ),
                           Text('_',
-                              style: HudTextStyles.mono(16).copyWith(
-                                shadows: [Shadow(color: HudColors.cyan, blurRadius: 8)],
-                              ))
+                                  style: HudTextStyles.mono(16).copyWith(
+                                    shadows: [
+                                      Shadow(
+                                          color: HudColors.cyan, blurRadius: 8)
+                                    ],
+                                  ))
                               .animate(onPlay: (c) => c.repeat())
                               .fadeOut(duration: 500.ms, delay: 500.ms)
                               .then()
@@ -185,7 +201,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 16),
                     // About Me
                     GlowText('ABOUT ME',
-                        style: HudTextStyles.header(13, color: HudColors.magenta, weight: FontWeight.w600),
+                        style: HudTextStyles.header(13,
+                            color: HudColors.magenta, weight: FontWeight.w600),
                         glowColor: HudColors.magenta),
                     const SizedBox(height: 8),
                     Text(
@@ -195,16 +212,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 10),
                     // Location chip
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
-                        border: Border.all(color: HudColors.cyan.withOpacity(0.2)),
+                        border:
+                            Border.all(color: HudColors.cyan.withOpacity(0.2)),
                         borderRadius: BorderRadius.circular(4),
                         color: HudColors.cyan.withOpacity(0.06),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.location_on_outlined, color: HudColors.cyan, size: 13),
+                          const Icon(Icons.location_on_outlined,
+                              color: HudColors.cyan, size: 13),
                           const SizedBox(width: 5),
                           Text('Naghbahal, Lalitpur, Nepal',
                               style: HudTextStyles.mono(10.5)),
@@ -228,7 +248,8 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 14),
               // Social links panel
               HudPanel(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -240,19 +261,23 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         _socialBtn('+977 9863021878', 'tel:+9779863021878'),
                         _socialBtn('GITHUB', 'https://github.com/AnikShakya'),
-                        _socialBtn('LINKEDIN', 'https://www.linkedin.com/in/anik-shakya-67141b192/'),
-                        _socialBtn('INSTAGRAM', 'https://www.instagram.com/anik_shakya_'),
+                        _socialBtn('LINKEDIN',
+                            'https://www.linkedin.com/in/anik-shakya-67141b192/'),
+                        _socialBtn('INSTAGRAM',
+                            'https://www.instagram.com/anik_shakya_'),
                         GestureDetector(
                           onTap: widget.onContactTap,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
                               border: Border.all(color: HudColors.magenta),
                               borderRadius: BorderRadius.circular(5),
                               color: HudColors.magenta.withOpacity(0.08),
                             ),
                             child: Text('GET IN TOUCH ↗',
-                                style: HudTextStyles.mono(10, color: HudColors.magenta)
+                                style: HudTextStyles.mono(10,
+                                        color: HudColors.magenta)
                                     .copyWith(fontWeight: FontWeight.bold)),
                           ),
                         ),
@@ -260,7 +285,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-              ).animate().fadeIn(duration: 600.ms, delay: 200.ms).slideY(begin: 0.08),
+              )
+                  .animate()
+                  .fadeIn(duration: 600.ms, delay: 200.ms)
+                  .slideY(begin: 0.08),
             ],
           ),
         ),
