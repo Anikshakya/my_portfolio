@@ -150,7 +150,13 @@ class _PortfolioRootState extends State<PortfolioRoot> {
         _page(const ProjectsScreen(),
             topPad: topPad + 24, bottomPad: bottomPad),
         _page(const SkillsScreen(), topPad: topPad + 24, bottomPad: bottomPad),
-        _page(const ContactScreen(), topPad: topPad + 24, bottomPad: bottomPad),
+        _page(
+          const ContactScreen(),
+          topPad: 0,
+          bottomPad: 0,
+          fullWidth: true,
+          scrollable: false,
+        ),
       ],
     );
   }
@@ -160,6 +166,7 @@ class _PortfolioRootState extends State<PortfolioRoot> {
     required double topPad,
     required double bottomPad,
     bool scrollable = true,
+    bool fullWidth = false,
   }) {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -169,12 +176,17 @@ class _PortfolioRootState extends State<PortfolioRoot> {
           padding: EdgeInsets.only(top: topPad, bottom: bottomPad),
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: minHeight),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 1200),
-                child: child,
-              ),
-            ),
+            child: fullWidth
+                ? SizedBox(
+                    height: minHeight,
+                    child: child,
+                  )
+                : Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 1200),
+                      child: child,
+                    ),
+                  ),
           ),
         );
 

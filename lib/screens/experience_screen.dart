@@ -98,7 +98,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
     );
   }
 
-  // Wide layout with IntrinsicHeight so timeline and telemetry details stay symmetric
+  // Wide layout with IntrinsicHeight so timeline and telemetry details match height symmetrically
   Widget _wideLayout(Experience exp, ColorScheme colorScheme) =>
       IntrinsicHeight(
         child: Row(
@@ -158,17 +158,17 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
           Expanded(
             child: Stack(
               children: [
-                // Cyberpunk Vertical Connecting Track Line
+                // Cyberpunk Vertical Connecting Track Line spanning full height
                 Positioned(
                   left: 17,
-                  top: 18,
-                  bottom: 24,
+                  top: 8,
+                  bottom: 8,
                   child: CustomPaint(
                     painter: _TimelineLinePainter(lineColor: cyanColor),
                   ),
                 ),
 
-                // Interactive Nodes List
+                // Interactive Nodes List stretching gaps evenly to fill height
                 Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(experiences.length, (i) {
@@ -212,170 +212,160 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Column(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
-                        Row(
-                          children: [
-                            Flexible(
-                              child: Text(
-                                exp.title,
-                                style: HudTextStyles.header(16,
-                                    color: Colors.white,
-                                    weight: FontWeight.w700),
-                              ),
+                        Flexible(
+                          child: Text(
+                            exp.title,
+                            style: HudTextStyles.header(16,
+                                color: Colors.white,
+                                weight: FontWeight.w700),
+                          ),
+                        ),
+                        if (exp.isCurrent) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: HudColors.green.withOpacity(0.15),
+                              border: Border.all(color: HudColors.green),
+                              borderRadius: BorderRadius.circular(3),
                             ),
-                            if (exp.isCurrent) ...[
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: HudColors.green.withOpacity(0.15),
-                                  border: Border.all(color: HudColors.green),
-                                  borderRadius: BorderRadius.circular(3),
-                                ),
-                                child: Text(
-                                  'ACTIVE',
-                                  style: HudTextStyles.mono(8,
-                                      color: HudColors.green),
-                                ),
-                              ),
-                            ]
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            Icon(Icons.business_rounded,
-                                size: 14, color: cyanColor),
-                            const SizedBox(width: 6),
-                            Text(exp.company,
-                                style: HudTextStyles.body(13,
-                                    color: cyanColor)),
-                            const SizedBox(width: 12),
-                            const Icon(Icons.location_on_outlined,
-                                size: 14, color: HudColors.textMuted),
-                            const SizedBox(width: 4),
-                            Text(exp.location,
-                                style: HudTextStyles.body(12,
-                                    color: HudColors.textMuted)),
-                          ],
-                        ),
+                            child: Text(
+                              'ACTIVE',
+                              style: HudTextStyles.mono(8,
+                                  color: HudColors.green),
+                            ),
+                          ),
+                        ]
                       ],
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: cyanColor.withOpacity(0.08),
-                      border: Border.all(color: cyanColor.withOpacity(0.25)),
-                      borderRadius: BorderRadius.circular(4),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(Icons.business_rounded,
+                            size: 14, color: cyanColor),
+                        const SizedBox(width: 6),
+                        Text(exp.company,
+                            style: HudTextStyles.body(13,
+                                color: cyanColor)),
+                        const SizedBox(width: 12),
+                        const Icon(Icons.location_on_outlined,
+                            size: 14, color: HudColors.textMuted),
+                        const SizedBox(width: 4),
+                        Text(exp.location,
+                            style: HudTextStyles.body(12,
+                                color: HudColors.textMuted)),
+                      ],
                     ),
-                    child: Text(
-                      '${exp.startDate} – ${exp.endDate}',
-                      style: HudTextStyles.mono(10),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-              const SizedBox(height: 14),
-              Divider(color: cyanColor.withOpacity(0.2)),
-              const SizedBox(height: 12),
-              Text(
-                exp.description,
-                style: HudTextStyles.body(13).copyWith(height: 1.5),
-              ),
-              const SizedBox(height: 18),
-              Text(
-                'KEY MILESTONES & ACHIEVEMENTS:',
-                style: HudTextStyles.mono(10, color: HudColors.textMuted),
-              ),
-              const SizedBox(height: 10),
-              ...exp.achievements.map(
-                (a) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 6),
-                        width: 5,
-                        height: 5,
-                        decoration: BoxDecoration(
-                          color: cyanColor,
-                          borderRadius: BorderRadius.circular(1),
-                          boxShadow: [
-                            BoxShadow(
-                              color: cyanColor.withOpacity(0.8),
-                              blurRadius: 4,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          a,
-                          style: HudTextStyles.body(12.5).copyWith(height: 1.4),
-                        ),
-                      ),
-                    ],
-                  ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: cyanColor.withOpacity(0.08),
+                  border: Border.all(color: cyanColor.withOpacity(0.25)),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  '${exp.startDate} – ${exp.endDate}',
+                  style: HudTextStyles.mono(10),
                 ),
               ),
             ],
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 12),
-              Divider(color: cyanColor.withOpacity(0.15)),
-              const SizedBox(height: 10),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                crossAxisAlignment: WrapCrossAlignment.center,
+          const SizedBox(height: 14),
+          Divider(color: cyanColor.withOpacity(0.2)),
+          const SizedBox(height: 12),
+          Text(
+            exp.description,
+            style: HudTextStyles.body(13).copyWith(height: 1.5),
+          ),
+          const SizedBox(height: 18),
+          Text(
+            'KEY MILESTONES & ACHIEVEMENTS:',
+            style: HudTextStyles.mono(10, color: HudColors.textMuted),
+          ),
+          const SizedBox(height: 10),
+          ...exp.achievements.map(
+            (a) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('STACK:',
-                      style: HudTextStyles.mono(9.5, color: HudColors.textMuted)),
-                  ...exp.technologies.map(
-                    (t) => _HoverableTechChip(label: t, colorScheme: colorScheme),
+                  Container(
+                    margin: const EdgeInsets.only(top: 6),
+                    width: 5,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: cyanColor,
+                      borderRadius: BorderRadius.circular(1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: cyanColor.withOpacity(0.8),
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      a,
+                      style: HudTextStyles.body(12.5).copyWith(height: 1.4),
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 18),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _NavButton(
-                    label: '◄ NEXT',
-                    enabled: _selectedIndex > 0,
-                    colorScheme: colorScheme,
-                    onTap: () => setState(() => _selectedIndex--),
-                  ),
-                  Text(
-                    'LOG ${_selectedIndex + 1} OF ${experiences.length}',
-                    style: HudTextStyles.mono(10, color: HudColors.textMuted),
-                  ),
-                  _NavButton(
-                    label: 'PREVIOUS ►',
-                    enabled: _selectedIndex < experiences.length - 1,
-                    colorScheme: colorScheme,
-                    onTap: () => setState(() => _selectedIndex++),
-                  ),
-                ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Divider(color: cyanColor.withOpacity(0.15)),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text('STACK:',
+                  style: HudTextStyles.mono(9.5, color: HudColors.textMuted)),
+              ...exp.technologies.map(
+                (t) => _HoverableTechChip(label: t, colorScheme: colorScheme),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _NavButton(
+                label: '◄ NEXT',
+                enabled: _selectedIndex > 0,
+                colorScheme: colorScheme,
+                onTap: () => setState(() => _selectedIndex--),
+              ),
+              Text(
+                'LOG ${_selectedIndex + 1} OF ${experiences.length}',
+                style: HudTextStyles.mono(10, color: HudColors.textMuted),
+              ),
+              _NavButton(
+                label: 'PREVIOUS ►',
+                enabled: _selectedIndex < experiences.length - 1,
+                colorScheme: colorScheme,
+                onTap: () => setState(() => _selectedIndex++),
               ),
             ],
           ),

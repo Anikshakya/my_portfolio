@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../theme/hud_theme.dart';
-import '../widgets/hud_panel.dart';
-import '../widgets/glow_text.dart';
 import '../widgets/scroll_animate.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -80,11 +78,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final isWide = size.width > 700;
-    final hPad = isWide ? 56.0 : 24.0;
+    final hPad = isWide ? 56.0 : 20.0;
 
     return Container(
       constraints: BoxConstraints(minHeight: size.height * 0.88),
-      padding: EdgeInsets.fromLTRB(hPad, 24, hPad, 80),
+      padding: EdgeInsets.fromLTRB(hPad, 32, hPad, 80),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1100),
@@ -102,32 +100,32 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         // Left: Text content
         Expanded(
-          flex: 6,
+          flex: 7,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _StatusChip(),
-              const SizedBox(height: 24),
-              _heroName(),
-              const SizedBox(height: 16),
-              _typewriterRow(),
               const SizedBox(height: 20),
+              _heroName(),
+              const SizedBox(height: 14),
+              _typewriterRow(),
+              const SizedBox(height: 18),
               _heroBio(),
-              const SizedBox(height: 32),
-              _statsRow(),
-              const SizedBox(height: 36),
-              _ctaRow(),
               const SizedBox(height: 28),
+              _statsRow(),
+              const SizedBox(height: 32),
+              _ctaRow(),
+              const SizedBox(height: 24),
               _socialRow(),
             ],
           ),
         ),
-        const SizedBox(width: 60),
-        // Right: Avatar
+        const SizedBox(width: 48),
+        // Right: Avatar card framing
         Expanded(
           flex: 4,
-          child: Center(child: _avatar(200)),
+          child: Center(child: _avatarContainer(220)),
         ),
       ],
     );
@@ -139,20 +137,20 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _avatar(120),
-        const SizedBox(height: 28),
+        _avatarContainer(150),
+        const SizedBox(height: 24),
         _StatusChip(),
-        const SizedBox(height: 20),
+        const SizedBox(height: 18),
         _heroName(center: true),
         const SizedBox(height: 12),
         _typewriterRow(center: true),
         const SizedBox(height: 16),
         _heroBio(center: true),
-        const SizedBox(height: 28),
+        const SizedBox(height: 24),
         _statsRow(),
-        const SizedBox(height: 28),
+        const SizedBox(height: 24),
         _ctaRow(),
-        const SizedBox(height: 22),
+        const SizedBox(height: 20),
         _socialRow(center: true),
       ],
     );
@@ -160,31 +158,43 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // ── Sub-widgets ───────────────────────────────────────────────
 
-  Widget _avatar(double size) => ScrollAnimate(
+  Widget _avatarContainer(double size) => ScrollAnimate(
         key: const ValueKey('home_avatar'),
         child: Container(
-          width: size,
-          height: size,
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              colors: [HudColors.cyan, HudColors.magenta],
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: HudColors.cyan.withOpacity(0.3)),
+            gradient: LinearGradient(
+              colors: [HudColors.cyan.withOpacity(0.08), HudColors.magenta.withOpacity(0.08)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             boxShadow: [
-              BoxShadow(color: HudColors.cyan.withOpacity(0.35), blurRadius: 40, spreadRadius: 2),
-              BoxShadow(color: HudColors.magenta.withOpacity(0.2), blurRadius: 30),
+              BoxShadow(color: HudColors.cyan.withOpacity(0.2), blurRadius: 30, spreadRadius: -5),
             ],
           ),
-          padding: const EdgeInsets.all(3),
-          child: ClipOval(
-            child: Image.asset(
-              'assets/images/portfolio.jpeg',
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                color: const Color(0xFF0A0A16),
-                child: const Icon(Icons.person, color: HudColors.cyan, size: 60),
+          padding: const EdgeInsets.all(12),
+          child: Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: const LinearGradient(
+                colors: [HudColors.cyan, HudColors.magenta],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            padding: const EdgeInsets.all(3),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: Image.asset(
+                'assets/images/portfolio.jpeg',
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  color: const Color(0xFF0A0A16),
+                  child: const Icon(Icons.person, color: HudColors.cyan, size: 60),
+                ),
               ),
             ),
           ),
@@ -197,12 +207,11 @@ class _HomeScreenState extends State<HomeScreen> {
           'ANIK SHAKYA',
           textAlign: center ? TextAlign.center : TextAlign.start,
           style: HudTextStyles.header(
-            MediaQuery.of(context).size.width > 700 ? 42 : 30,
+            MediaQuery.of(context).size.width > 700 ? 40 : 28,
           ).copyWith(
-            letterSpacing: 3,
+            letterSpacing: 3.5,
             shadows: [
-              const Shadow(color: HudColors.cyan, blurRadius: 20),
-              const Shadow(color: HudColors.cyan, blurRadius: 40),
+              const Shadow(color: HudColors.cyan, blurRadius: 15),
             ],
           ),
         ),
@@ -232,13 +241,14 @@ class _HomeScreenState extends State<HomeScreen> {
         key: const ValueKey('home_bio'),
         delay: const Duration(milliseconds: 150),
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 560),
+          constraints: const BoxConstraints(maxWidth: 580),
           child: Text(
-            'Flutter Developer with 4+ years of experience building high-performance '
-            'cross-platform mobile & web apps for international clients. '
-            'Specializing in clean architecture, Firebase, REST APIs, native platform integration, and polished UI.',
+            'Professional Flutter Engineer & Mobile App Architect dedicated to crafting exceptional '
+            'cross-platform experiences. With 4+ years of expertise engineering robust applications, '
+            'I specialize in clean architecture, real-time backend synchronization, and high-performance UIs '
+            'for international clients.',
             textAlign: center ? TextAlign.center : TextAlign.start,
-            style: HudTextStyles.body(14.5, color: HudColors.textMuted).copyWith(height: 1.75),
+            style: HudTextStyles.body(14, color: HudColors.textMuted).copyWith(height: 1.7),
           ),
         ),
       );
@@ -252,23 +262,23 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(width: 12),
             _statChip('16+', 'Projects'),
             const SizedBox(width: 12),
-            _statChip('2', 'Countries'),
+            _statChip('100%', 'Satisfaction'),
           ],
         ),
       );
 
   Widget _statChip(String val, String label) => Expanded(
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
           decoration: BoxDecoration(
-            color: HudColors.magenta.withOpacity(0.06),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: HudColors.magenta.withOpacity(0.25)),
+            color: HudColors.magenta.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: HudColors.magenta.withOpacity(0.2)),
           ),
           child: Column(
             children: [
-              Text(val, style: HudTextStyles.header(20, color: HudColors.magenta)),
-              const SizedBox(height: 4),
+              Text(val, style: HudTextStyles.header(18, color: HudColors.magenta)),
+              const SizedBox(height: 2),
               Text(label, style: HudTextStyles.mono(9, color: HudColors.textMuted)),
             ],
           ),
@@ -282,36 +292,30 @@ class _HomeScreenState extends State<HomeScreen> {
           spacing: 12,
           runSpacing: 12,
           children: [
-            // Primary CTA
-            GestureDetector(
+            // Only the primary contact CTA button remains here
+            _HoverButton(
               onTap: widget.onContactTap,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+              builder: (isHovered) => Container(
+                padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 13),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [HudColors.cyan, Color(0xFF00A8B5)],
+                  gradient: LinearGradient(
+                    colors: isHovered
+                        ? [HudColors.cyan, HudColors.cyan]
+                        : [HudColors.cyan, const Color(0xFF00A8B5)],
                   ),
-                  borderRadius: BorderRadius.circular(6),
-                  boxShadow: [BoxShadow(color: HudColors.cyan.withOpacity(0.35), blurRadius: 20)],
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: HudColors.cyan.withOpacity(isHovered ? 0.5 : 0.25),
+                      blurRadius: isHovered ? 20 : 12,
+                    ),
+                  ],
                 ),
                 child: Text(
                   'GET IN TOUCH',
                   style: HudTextStyles.mono(12, color: const Color(0xFF020208))
                       .copyWith(fontWeight: FontWeight.bold),
                 ),
-              ),
-            ),
-            // Secondary CTA
-            GestureDetector(
-              onTap: () => _launch('https://github.com/AnikShakya'),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: HudColors.cyan.withOpacity(0.5)),
-                  color: HudColors.cyan.withOpacity(0.05),
-                ),
-                child: Text('VIEW GITHUB ↗', style: HudTextStyles.mono(12)),
               ),
             ),
           ],
@@ -321,40 +325,80 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _socialRow({bool center = false}) => ScrollAnimate(
         key: const ValueKey('home_socials'),
         delay: const Duration(milliseconds: 260),
-        child: Row(
-          mainAxisAlignment: center ? MainAxisAlignment.center : MainAxisAlignment.start,
+        child: Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          alignment: center ? WrapAlignment.center : WrapAlignment.start,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            _iconLink(Icons.code, 'https://github.com/AnikShakya'),
-            const SizedBox(width: 14),
-            _iconLink(Icons.work_outline, 'https://www.linkedin.com/in/anik-shakya-67141b192/'),
-            const SizedBox(width: 14),
-            _iconLink(Icons.camera_alt_outlined, 'https://www.instagram.com/anik_shakya_'),
-            const SizedBox(width: 14),
-            _iconLink(Icons.phone_outlined, 'tel:+9779863021878'),
-            const SizedBox(width: 20),
-            Container(width: 1, height: 20, color: HudColors.textMuted.withOpacity(0.3)),
-            const SizedBox(width: 20),
-            Row(children: [
-              const Icon(Icons.location_on_outlined, color: HudColors.cyan, size: 13),
-              const SizedBox(width: 5),
-              Text('Lalitpur, Nepal', style: HudTextStyles.mono(10, color: HudColors.textMuted)),
-            ]),
+            _socialChip(Icons.code, 'GitHub', 'https://github.com/AnikShakya'),
+            _socialChip(Icons.work_outline, 'LinkedIn', 'https://www.linkedin.com/in/anik-shakya-67141b192/'),
+            _socialChip(Icons.camera_alt_outlined, 'Instagram', 'https://www.instagram.com/anik_shakya_'),
+            _socialChip(Icons.description_outlined, 'Resume', 'https://github.com/AnikShakya'),
+            _socialChip(Icons.phone_outlined, '+977 9863021878', 'tel:+9779863021878'),
+            _socialChip(
+              Icons.location_on_outlined,
+              'Naghbahal, Lalitpur',
+              'https://www.google.com/maps/search/?api=1&query=Naghbahal,+Lalitpur,+Nepal',
+            ),
           ],
         ),
       );
 
-  Widget _iconLink(IconData icon, String url) => GestureDetector(
+  Widget _socialChip(IconData icon, String label, String url) => _HoverButton(
         onTap: () => _launch(url),
-        child: Container(
-          padding: const EdgeInsets.all(9),
+        builder: (isHovered) => Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: HudColors.cyan.withOpacity(0.2)),
-            color: HudColors.cyan.withOpacity(0.04),
+            border: Border.all(
+              color: HudColors.cyan.withOpacity(isHovered ? 0.9 : 0.2),
+            ),
+            color: HudColors.cyan.withOpacity(isHovered ? 0.12 : 0.03),
           ),
-          child: Icon(icon, color: HudColors.cyan, size: 16),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: HudColors.cyan, size: 14),
+              const SizedBox(width: 5),
+              Text(label, style: HudTextStyles.mono(10, color: HudColors.textMain)),
+            ],
+          ),
         ),
       );
+}
+
+// ── Reusable Hover State Widget ──────────────────────────────────
+
+class _HoverButton extends StatefulWidget {
+  final VoidCallback onTap;
+  final Widget Function(bool isHovered) builder;
+
+  const _HoverButton({required this.onTap, required this.builder});
+
+  @override
+  State<_HoverButton> createState() => _HoverButtonState();
+}
+
+class _HoverButtonState extends State<_HoverButton> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedScale(
+          scale: _isHovered ? 1.03 : 1.0,
+          duration: const Duration(milliseconds: 150),
+          child: widget.builder(_isHovered),
+        ),
+      ),
+    );
+  }
 }
 
 // ── Status chip ──────────────────────────────────────────────────
@@ -363,7 +407,7 @@ class _StatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
       decoration: BoxDecoration(
         color: HudColors.green.withOpacity(0.08),
         border: Border.all(color: HudColors.green.withOpacity(0.4)),
@@ -373,16 +417,16 @@ class _StatusChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 7,
-            height: 7,
-            decoration: BoxDecoration(
+            width: 6,
+            height: 6,
+            decoration: const BoxDecoration(
               color: HudColors.green,
               shape: BoxShape.circle,
               boxShadow: [BoxShadow(color: HudColors.green, blurRadius: 6)],
             ),
           )
               .animate(onPlay: (c) => c.repeat(reverse: true))
-              .scaleXY(end: 1.3, duration: 1000.ms),
+              .scaleXY(end: 1.4, duration: 1000.ms),
           const SizedBox(width: 8),
           Text('Available for Work', style: HudTextStyles.mono(10, color: HudColors.green)),
         ],

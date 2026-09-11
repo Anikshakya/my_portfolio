@@ -70,7 +70,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     final hasNextPage = _currentPage < pageCount - 1;
 
     // Dynamic grid extent based on screen width
-    final double dynamicExtent = isWide ? 248.0 : 250.0;
+    final double dynamicExtent = isWide ? 242.0 : 250.0;
     final double dynamicCarouselHeight = (dynamicExtent * 2) + 24.0;
 
     return SizedBox(
@@ -107,7 +107,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                       const Spacer(),
                       Text(
                         '${displayed.length} projects',
-                        style: HudTextStyles.mono(10, color: HudColors.textMuted),
+                        style:
+                            HudTextStyles.mono(10, color: HudColors.textMuted),
                       ),
                     ],
                   ),
@@ -140,7 +141,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                               crossAxisCount: isWide ? 3 : 1,
                               mainAxisSpacing: 16,
                               crossAxisSpacing: 16,
-                              mainAxisExtent: dynamicExtent, // Fully dynamic card extent
+                              mainAxisExtent:
+                                  dynamicExtent, // Fully dynamic card extent
                             ),
                             itemCount: pageProjects.length,
                             itemBuilder: (_, i) => ScrollAnimate(
@@ -156,44 +158,24 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                       ),
                     ),
 
-                    // Navigation Arrows (Animated after cards completion)
+                    // Overlapping Side Navigation Buttons
                     if (hasPreviousPage)
                       Positioned(
                         left: -20,
-                        child: ScrollAnimate(
-                          key: ValueKey('prev_arrow_$_currentPage'),
-                          delay: Duration(
-                              milliseconds:
-                                  (itemsPerPage < displayed.length
-                                              ? itemsPerPage
-                                              : displayed.length) *
-                                          60 +
-                                      100),
-                          child: _HoverableCarouselArrow(
-                            icon: Icons.arrow_back_ios_new_rounded,
-                            tooltip: 'Previous projects',
-                            onPressed: () => _goToPage(_currentPage - 1),
-                          ),
+                        child: _HoverableCarouselArrow(
+                          icon: Icons.arrow_back_ios_new_rounded,
+                          tooltip: 'Previous projects',
+                          onPressed: () => _goToPage(_currentPage - 1),
                         ),
                       ),
 
                     if (hasNextPage)
                       Positioned(
                         right: -20,
-                        child: ScrollAnimate(
-                          key: ValueKey('next_arrow_$_currentPage'),
-                          delay: Duration(
-                              milliseconds:
-                                  (itemsPerPage < displayed.length
-                                              ? itemsPerPage
-                                              : displayed.length) *
-                                          60 +
-                                      100),
-                          child: _HoverableCarouselArrow(
-                            icon: Icons.arrow_forward_ios_rounded,
-                            tooltip: 'More projects',
-                            onPressed: () => _goToPage(_currentPage + 1),
-                          ),
+                        child: _HoverableCarouselArrow(
+                          icon: Icons.arrow_forward_ios_rounded,
+                          tooltip: 'More projects',
+                          onPressed: () => _goToPage(_currentPage + 1),
                         ),
                       ),
                   ],
@@ -388,6 +370,8 @@ class _HoverableCarouselArrowState extends State<_HoverableCarouselArrow> {
 
 // ── Project Card ─────────────────────────────────────────────────
 
+// ── Project Card ─────────────────────────────────────────────────
+
 class _ProjectCard extends StatefulWidget {
   final Project project;
   final VoidCallback onTap;
@@ -399,6 +383,17 @@ class _ProjectCard extends StatefulWidget {
 
 class _ProjectCardState extends State<_ProjectCard> {
   bool _hovered = false;
+
+  String? _imageForProject(String id) => switch (id) {
+        'goatus' => 'assets/images/goatus.png',
+        'morinfo' => 'assets/images/morinfo.png',
+        'sendai-portal' => 'assets/images/sendai-portal.png',
+        'pecon' => 'assets/images/pecon.png',
+        'trandz-vistaar' => 'assets/images/trandz.png',
+        'mulyankan' => 'assets/images/mulyankan.png',
+        'durgabhagawati' => 'assets/images/durgabhagawati.png',
+        _ => null,
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -449,8 +444,19 @@ class _ProjectCardState extends State<_ProjectCard> {
                       border:
                           Border.all(color: HudColors.cyan.withOpacity(0.2)),
                     ),
-                    child: const Icon(Icons.apps_rounded,
-                        color: HudColors.cyan, size: 16),
+                    clipBehavior: Clip.antiAlias,
+                    child: _imageForProject(widget.project.id) == null
+                        ? const Icon(Icons.apps_rounded,
+                            color: HudColors.cyan, size: 16)
+                        : Image.asset(
+                            _imageForProject(widget.project.id)!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => const Icon(
+                              Icons.apps_rounded,
+                              color: HudColors.cyan,
+                              size: 16,
+                            ),
+                          ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -472,8 +478,8 @@ class _ProjectCardState extends State<_ProjectCard> {
                     ),
                   ),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 6, vertical: 2.5),
                     decoration: BoxDecoration(
                       color: isLive
                           ? HudColors.green.withOpacity(0.1)
@@ -537,7 +543,8 @@ class _ProjectCardState extends State<_ProjectCard> {
                           Expanded(
                             child: Text(
                               m,
-                              style: HudTextStyles.body(10, color: HudColors.textMain)
+                              style: HudTextStyles.body(10,
+                                      color: HudColors.textMain)
                                   .copyWith(height: 1.3),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -594,7 +601,6 @@ class _ProjectCardState extends State<_ProjectCard> {
     );
   }
 }
-
 // ── Cyberpunk HUD Project Modal ──────────────────────────────
 
 class _ProjectModal extends StatelessWidget {
@@ -612,7 +618,8 @@ class _ProjectModal extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF030814),
           borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-          border: Border.all(color: HudColors.cyan.withOpacity(0.4), width: 1.5),
+          border:
+              Border.all(color: HudColors.cyan.withOpacity(0.4), width: 1.5),
           boxShadow: [
             BoxShadow(
               color: HudColors.cyan.withOpacity(0.2),
@@ -712,8 +719,8 @@ class _ProjectModal extends StatelessWidget {
                             const SizedBox(height: 4),
                             Text(
                               proj.category.toUpperCase(),
-                              style: HudTextStyles.mono(11,
-                                  color: HudColors.cyan),
+                              style:
+                                  HudTextStyles.mono(11, color: HudColors.cyan),
                             ),
                           ],
                         ),
@@ -750,7 +757,8 @@ class _ProjectModal extends StatelessWidget {
 
                   // Overview
                   Text('OVERVIEW',
-                      style: HudTextStyles.mono(10, color: HudColors.textMuted)),
+                      style:
+                          HudTextStyles.mono(10, color: HudColors.textMuted)),
                   const SizedBox(height: 8),
                   Text(
                     proj.longDesc,
@@ -760,7 +768,8 @@ class _ProjectModal extends StatelessWidget {
 
                   // Key Highlights Bullets inside Dialog
                   Text('KEY HIGHLIGHTS',
-                      style: HudTextStyles.mono(10, color: HudColors.textMuted)),
+                      style:
+                          HudTextStyles.mono(10, color: HudColors.textMuted)),
                   const SizedBox(height: 12),
                   ...proj.metrics.map((m) => Padding(
                         padding: const EdgeInsets.only(bottom: 10),
@@ -797,7 +806,8 @@ class _ProjectModal extends StatelessWidget {
 
                   // Technologies Section
                   Text('TECHNOLOGY STACK',
-                      style: HudTextStyles.mono(10, color: HudColors.textMuted)),
+                      style:
+                          HudTextStyles.mono(10, color: HudColors.textMuted)),
                   const SizedBox(height: 10),
                   Wrap(
                     spacing: 6,
@@ -827,8 +837,8 @@ class _ProjectModal extends StatelessWidget {
                     _storeBtn('App Store ↗', proj.appstore!, HudColors.cyan),
                   if (proj.github != null) ...[
                     const SizedBox(height: 10),
-                    _storeBtn('GitHub Repository ↗', proj.github!,
-                        HudColors.magenta),
+                    _storeBtn(
+                        'GitHub Repository ↗', proj.github!, HudColors.magenta),
                   ],
                 ],
               ),
