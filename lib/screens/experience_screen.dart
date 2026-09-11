@@ -98,28 +98,25 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
     );
   }
 
-  // Wide layout with IntrinsicHeight so timeline and telemetry details match height symmetrically
-  Widget _wideLayout(Experience exp, ColorScheme colorScheme) =>
-      IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(
-              width: 320,
-              child: ScrollAnimate(
-                key: const ValueKey('exp_timeline_list'),
-                child: _timelineList(colorScheme),
-              ),
+  // Wide layout using Row with aligned children height via Container/Expanded constraints
+  Widget _wideLayout(Experience exp, ColorScheme colorScheme) => Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 320,
+            child: ScrollAnimate(
+              key: const ValueKey('exp_timeline_list'),
+              child: _timelineList(colorScheme),
             ),
-            const SizedBox(width: 20),
-            Expanded(
-              child: ScrollAnimate(
-                key: ValueKey('exp_detail_$_selectedIndex'),
-                child: _detailPanel(exp, colorScheme),
-              ),
+          ),
+          const SizedBox(width: 20),
+          Expanded(
+            child: ScrollAnimate(
+              key: ValueKey('exp_detail_$_selectedIndex'),
+              child: _detailPanel(exp, colorScheme),
             ),
-          ],
-        ),
+          ),
+        ],
       );
 
   Widget _narrowLayout(Experience exp, ColorScheme colorScheme) => Column(
@@ -148,6 +145,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -158,36 +156,38 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          Expanded(
-            child: Stack(
-              children: [
-                // Cyberpunk Vertical Connecting Track Line spanning full height
-                Positioned(
-                  left: 17,
-                  top: 8,
-                  bottom: 8,
-                  child: CustomPaint(
-                    painter: _TimelineLinePainter(lineColor: cyanColor),
-                  ),
+          // Wrapped nodes column inside a consistent non-expanded structural wrapper or tightly wrapped list
+          Stack(
+            children: [
+              // Cyberpunk Vertical Connecting Track Line spanning full height
+              Positioned(
+                left: 17,
+                top: 8,
+                bottom: 8,
+                child: CustomPaint(
+                  painter: _TimelineLinePainter(lineColor: cyanColor),
                 ),
+              ),
 
-                // Interactive Nodes List stretching gaps evenly to fill height
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(experiences.length, (i) {
-                    final e = experiences[i];
-                    final isSelected = _selectedIndex == i;
+              // Interactive Nodes List
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(experiences.length, (i) {
+                  final e = experiences[i];
+                  final isSelected = _selectedIndex == i;
 
-                    return _TimelineNodeTile(
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: _TimelineNodeTile(
                       experience: e,
                       isSelected: isSelected,
                       colorScheme: colorScheme,
                       onTap: () => setState(() => _selectedIndex = i),
-                    );
-                  }),
-                ),
-              ],
-            ),
+                    ),
+                  );
+                }),
+              ),
+            ],
           ),
           const SizedBox(height: 12),
           Divider(color: cyanColor.withOpacity(0.2), height: 1),

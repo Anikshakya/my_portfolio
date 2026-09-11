@@ -402,136 +402,171 @@ class _ContactScreenState extends State<ContactScreen> {
     );
   }
 
-  Widget _footer() => Container(
-        width: double.infinity,
-        padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
-        decoration: const BoxDecoration(
-          color: Color(0xD9020208),
-          border: Border(top: BorderSide(color: Color(0x4D00F0FF))),
-        ),
-        child: Column(
-          children: [
+  Widget _footer() {
+    final isWide = MediaQuery.of(context).size.width > 700;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 58),
+      decoration: const BoxDecoration(
+        color: Color(0xD9020208),
+        border: Border(top: BorderSide(color: Color(0x4D00F0FF))),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (isWide)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GlowText(
-                      'ANIK SHAKYA',
-                      style: HudTextStyles.header(15),
-                      glowColor: HudColors.cyan,
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      'SENIOR FLUTTER & CROSS-PLATFORM DEVELOPER',
-                      style: HudTextStyles.mono(
-                        8,
-                        color: HudColors.cyan,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Naghbahal, Lalitpur, Nepal',
-                      style: HudTextStyles.mono(
-                        9,
-                        color: HudColors.textMuted,
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'DIRECT CONTACT',
-                      style: HudTextStyles.mono(
-                        8,
-                        color: HudColors.cyan,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    _HoverTextLink(
-                      text: 'aniklinkin@gmail.com',
-                      onTap: () => _launch('mailto:aniklinkin@gmail.com'),
-                    ),
-                    const SizedBox(height: 3),
-                    _HoverTextLink(
-                      text: '+977 9863021878',
-                      onTap: () => _launch('tel:+9779863021878'),
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      'SOCIAL NETWORKS',
-                      style: HudTextStyles.mono(
-                        8,
-                        color: HudColors.magenta,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        _HoverSocialBadge(
-                          label: 'GitHub',
-                          url: 'https://github.com/AnikShakya',
-                          color: HudColors.cyan,
-                          icon: Icons.code,
-                          onTap: () => _launch('https://github.com/AnikShakya'),
-                        ),
-                        _HoverSocialBadge(
-                          label: 'LinkedIn',
-                          url:
-                              'https://www.linkedin.com/in/anik-shakya-67141b192/',
-                          color: HudColors.magenta,
-                          icon: Icons.work,
-                          onTap: () => _launch(
-                              'https://www.linkedin.com/in/anik-shakya-67141b192/'),
-                        ),
-                        _HoverSocialBadge(
-                          label: 'Instagram',
-                          url: 'https://www.instagram.com/anik_shakya_',
-                          color: HudColors.amber,
-                          icon: Icons.camera_alt,
-                          onTap: () =>
-                              _launch('https://www.instagram.com/anik_shakya_'),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                _footerBrandingColumn(),
+                _footerContactColumn(),
+                _footerSocialColumn(),
+              ],
+            )
+          else
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _footerBrandingColumn(),
+                const SizedBox(height: 20),
+                _footerContactColumn(),
+                const SizedBox(height: 20),
+                _footerSocialColumn(),
               ],
             ),
-            const SizedBox(height: 16),
-            const Divider(color: Color(0x14FFFFFF), height: 1),
-            const SizedBox(height: 12),
+          const SizedBox(height: 16),
+          const Divider(color: Color(0x14FFFFFF), height: 1),
+          const SizedBox(height: 12),
+          if (isWide)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '© ${DateTime.now().year} ANIK SHAKYA // '
-                  '${DateTime.now().toString().substring(0, 16)} // ALL SYSTEMS OPERATIONAL',
-                  style: HudTextStyles.mono(
-                    8,
-                    color: HudColors.textMuted,
-                  ),
-                ),
-                Text(
-                  '● SYSTEM STATUS: ONLINE',
-                  style: HudTextStyles.mono(
-                    8,
-                    color: HudColors.green,
-                  ),
-                ),
+                _footerCopyrightText(),
+                _footerStatusText(),
+              ],
+            )
+          else
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _footerCopyrightText(),
+                const SizedBox(height: 6),
+                _footerStatusText(),
               ],
             ),
-          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _footerBrandingColumn() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GlowText(
+            'ANIK SHAKYA',
+            style: HudTextStyles.header(15),
+            glowColor: HudColors.cyan,
+          ),
+          const SizedBox(height: 3),
+          Text(
+            'SENIOR FLUTTER & CROSS-PLATFORM DEVELOPER',
+            style: HudTextStyles.mono(
+              8,
+              color: HudColors.cyan,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Naghbahal, Lalitpur, Nepal',
+            style: HudTextStyles.mono(
+              9,
+              color: HudColors.textMuted,
+            ),
+          ),
+        ],
+      );
+
+  Widget _footerContactColumn() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'DIRECT CONTACT',
+            style: HudTextStyles.mono(
+              8,
+              color: HudColors.cyan,
+            ),
+          ),
+          const SizedBox(height: 5),
+          _HoverTextLink(
+            text: 'aniklinkin@gmail.com',
+            onTap: () => _launch('mailto:aniklinkin@gmail.com'),
+          ),
+          const SizedBox(height: 3),
+          _HoverTextLink(
+            text: '+977 9863021878',
+            onTap: () => _launch('tel:+9779863021878'),
+          ),
+        ],
+      );
+
+  Widget _footerSocialColumn() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'SOCIAL NETWORKS',
+            style: HudTextStyles.mono(
+              8,
+              color: HudColors.magenta,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _HoverSocialBadge(
+                label: 'GitHub',
+                url: 'https://github.com/AnikShakya',
+                color: HudColors.cyan,
+                icon: Icons.code,
+                onTap: () => _launch('https://github.com/AnikShakya'),
+              ),
+              _HoverSocialBadge(
+                label: 'LinkedIn',
+                url: 'https://www.linkedin.com/in/anik-shakya-67141b192/',
+                color: HudColors.magenta,
+                icon: Icons.work,
+                onTap: () => _launch(
+                    'https://www.linkedin.com/in/anik-shakya-67141b192/'),
+              ),
+              _HoverSocialBadge(
+                label: 'Instagram',
+                url: 'https://www.instagram.com/anik_shakya_',
+                color: HudColors.amber,
+                icon: Icons.camera_alt,
+                onTap: () => _launch('https://www.instagram.com/anik_shakya_'),
+              ),
+            ],
+          ),
+        ],
+      );
+
+  Widget _footerCopyrightText() => Text(
+        '© ${DateTime.now().year} ANIK SHAKYA // '
+        '${DateTime.now().toString().substring(0, 16)} // ALL SYSTEMS OPERATIONAL',
+        style: HudTextStyles.mono(
+          8,
+          color: HudColors.textMuted,
+        ),
+      );
+
+  Widget _footerStatusText() => Text(
+        '● SYSTEM STATUS: ONLINE',
+        style: HudTextStyles.mono(
+          8,
+          color: HudColors.green,
         ),
       );
 }
