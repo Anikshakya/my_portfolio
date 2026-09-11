@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'theme/hud_theme.dart';
 import 'widgets/space_background.dart';
 import 'widgets/nav_rail.dart';
@@ -212,6 +213,14 @@ class _TopBar extends StatelessWidget {
       required this.sectionNames,
       required this.isWide});
 
+  static const _resumeDownloadUrl =
+      'https://drive.google.com/uc?export=download&id=1DVXMgBsQ2_-sZ87uilSv-n76lRJsrCFP';
+
+  Future<void> _downloadResume() async {
+    final uri = Uri.parse(_resumeDownloadUrl);
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -229,14 +238,50 @@ class _TopBar extends StatelessWidget {
         ),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            'ANIK SHAKYA // PORTFOLIO',
-            style: HudTextStyles.mono(10).copyWith(
-              shadows: [const Shadow(color: HudColors.cyan, blurRadius: 8)],
+          Expanded(
+            child: Text(
+              'ANIK SHAKYA // PORTFOLIO',
+              overflow: TextOverflow.ellipsis,
+              style: HudTextStyles.mono(10).copyWith(
+                shadows: [const Shadow(color: HudColors.cyan, blurRadius: 8)],
+              ),
             ),
           ),
+          const SizedBox(width: 8),
+          Tooltip(
+            message: 'Download resume',
+            child: InkWell(
+              onTap: _downloadResume,
+              borderRadius: BorderRadius.circular(3),
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: isWide ? 9 : 7,
+                  vertical: 5,
+                ),
+                decoration: BoxDecoration(
+                  border: Border.all(color: HudColors.magenta.withOpacity(0.5)),
+                  borderRadius: BorderRadius.circular(3),
+                  color: HudColors.magenta.withOpacity(0.08),
+                ),
+                child: isWide
+                    ? Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.download_rounded,
+                              size: 14, color: HudColors.magenta),
+                          const SizedBox(width: 5),
+                          Text('RESUME',
+                              style: HudTextStyles.mono(9,
+                                  color: HudColors.magenta)),
+                        ],
+                      )
+                    : const Icon(Icons.download_rounded,
+                        size: 16, color: HudColors.magenta),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(

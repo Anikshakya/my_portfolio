@@ -126,7 +126,10 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
         children: [
           ScrollAnimate(
             key: const ValueKey('exp_timeline_list_mobile'),
-            child: _timelineList(colorScheme),
+            child: SizedBox(
+              height: 340, // Fixed height container for timeline nodes on mobile
+              child: _timelineList(colorScheme),
+            ),
           ),
           const SizedBox(height: 16),
           ScrollAnimate(
@@ -209,7 +212,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
       borderColor: exp.isCurrent
           ? HudColors.green.withOpacity(0.4)
           : HudColors.borderCyan,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -287,22 +290,22 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 10),
           Divider(color: cyanColor.withOpacity(0.2)),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Text(
             exp.description,
-            style: HudTextStyles.body(13).copyWith(height: 1.5),
+            style: HudTextStyles.body(13).copyWith(height: 1.4),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 12),
           Text(
             'KEY MILESTONES & ACHIEVEMENTS:',
             style: HudTextStyles.mono(10, color: HudColors.textMuted),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 6),
           ...exp.achievements.map(
             (a) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.only(bottom: 5),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -325,16 +328,16 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                   Expanded(
                     child: Text(
                       a,
-                      style: HudTextStyles.body(12.5).copyWith(height: 1.4),
+                      style: HudTextStyles.body(12.5).copyWith(height: 1.3),
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Divider(color: cyanColor.withOpacity(0.15)),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Wrap(
             spacing: 6,
             runSpacing: 6,
@@ -347,7 +350,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -413,7 +416,7 @@ class _TimelineNodeTileState extends State<_TimelineNodeTile> {
         onTap: widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
           decoration: BoxDecoration(
             color: isSel
                 ? cyanColor.withOpacity(0.14)
