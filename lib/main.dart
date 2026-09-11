@@ -22,7 +22,6 @@ void main() {
 
 class PortfolioApp extends StatelessWidget {
   const PortfolioApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -36,19 +35,25 @@ class PortfolioApp extends StatelessWidget {
 
 class PortfolioRoot extends StatefulWidget {
   const PortfolioRoot({super.key});
-
   @override
   State<PortfolioRoot> createState() => _PortfolioRootState();
 }
 
 class _PortfolioRootState extends State<PortfolioRoot> {
+  final PageController _pageController = PageController();
   int _currentIndex = 0;
-  late final PageController _pageController;
+
+  static const _sectionNames = [
+    'ABOUT',
+    'EXPERIENCE',
+    'PROJECTS',
+    'SKILLS',
+    'CONTACT',
+  ];
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
   }
 
   @override
@@ -57,35 +62,22 @@ class _PortfolioRootState extends State<PortfolioRoot> {
     super.dispose();
   }
 
-  void _navigateTo(int index) {
-    setState(() => _currentIndex = index);
+  void _scrollTo(int index) {
     _pageController.animateToPage(
       index,
-      duration: const Duration(milliseconds: 450),
+      duration: const Duration(milliseconds: 700),
       curve: Curves.easeInOutCubic,
     );
   }
 
-  List<Widget> get _screens => [
-        HomeScreen(onContactTap: () => _navigateTo(4)),
-        const ExperienceScreen(),
-        const ProjectsScreen(),
-        const SkillsScreen(),
-        const ContactScreen(),
-      ];
-
   @override
   Widget build(BuildContext context) {
-    final isWide = MediaQuery.of(context).size.width > 600;
-
+    final isWide = MediaQuery.of(context).size.width > 700;
     return Scaffold(
       backgroundColor: HudColors.background,
       body: Stack(
         children: [
-          // Animated star background
           const Positioned.fill(child: SpaceBackground()),
-
-          // Top scan-line overlay (subtle HUD effect)
           Positioned.fill(
             child: IgnorePointer(
               child: Container(
@@ -93,102 +85,168 @@ class _PortfolioRootState extends State<PortfolioRoot> {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Color(0x0A00F0FF), Colors.transparent, Color(0x0AFF007F)],
+                    colors: [
+                      Color(0x0A00F0FF),
+                      Colors.transparent,
+                      Color(0x0AFF007F)
+                    ],
                   ),
                 ),
               ),
             ),
           ),
-
           // Main content
           if (isWide)
-            // Tablet/Desktop: side nav rail + page view
-            Row(
-              children: [
-                HudNavRail(currentIndex: _currentIndex, onTap: _navigateTo),
-                Expanded(
-                  child: PageView(
-                    controller: _pageController,
-                    scrollDirection: Axis.vertical,
-                    onPageChanged: (i) => setState(() => _currentIndex = i),
-                    physics: const BouncingScrollPhysics(),
-                    children: _screens,
-                  ),
-                ),
-              ],
-            )
+            Row(children: [
+              HudNavRail(currentIndex: _currentIndex, onTap: _scrollTo),
+              Expanded(child: _buildPages(isWide)),
+            ])
           else
-            // Mobile: full width pages + bottom nav
-            PageView(
-              controller: _pageController,
-              scrollDirection: Axis.vertical,
-              onPageChanged: (i) => setState(() => _currentIndex = i),
-              physics: const BouncingScrollPhysics(),
-              children: _screens,
-            ),
-
-          // Top HUD status bar overlay
+            _buildPages(isWide),
+          // Top bar
           Positioned(
             top: 0,
             left: 0,
             right: 0,
-            child: _HudTopBar(currentIndex: _currentIndex),
+            child: _TopBar(
+              currentIndex: _currentIndex,
+              sectionNames: _sectionNames,
+              isWide: isWide,
+            ),
           ),
-
-          // Mobile bottom nav bar
+          // Mobile bottom nav
           if (!isWide)
             Positioned(
               bottom: 0,
               left: 0,
               right: 0,
-              child: _MobileBottomNav(currentIndex: _currentIndex, onTap: _navigateTo),
+              child: _BottomNav(currentIndex: _currentIndex, onTap: _scrollTo),
             ),
         ],
       ),
     );
   }
+
+  Widget _buildPages(bool isWide) {
+    final topPad = MediaQuery.of(context).padding.top;
+    final bottomPad = isWide ? 24.0 : 72.0;
+
+    return PageView(
+      controller: _pageController,
+      scrollDirection: Axis.vertical,
+      onPageChanged: (index) => setState(() => _currentIndex = index),
+      children: [
+        _page(
+          HomeScreen(onContactTap: () => _scrollTo(4)),
+          topPad: topPad + 48,
+          bottomPad: bottomPad,
+        ),
+        _page(
+          const ExperienceScreen(),
+          topPad: topPad + 24,
+          bottomPad: bottomPad,
+          scrollable: false,
+        ),
+        _page(const ProjectsScreen(),
+            topPad: topPad + 24, bottomPad: bottomPad),
+        _page(const SkillsScreen(), topPad: topPad + 24, bottomPad: bottomPad),
+        _page(const ContactScreen(), topPad: topPad + 24, bottomPad: bottomPad),
+      ],
+    );
+  }
+
+  Widget _page(
+    Widget child, {
+    required double topPad,
+    required double bottomPad,
+    bool scrollable = true,
+  }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final availableHeight = constraints.maxHeight - topPad - bottomPad;
+        final minHeight = availableHeight > 0 ? availableHeight : 0.0;
+        final content = Padding(
+          padding: EdgeInsets.only(top: topPad, bottom: bottomPad),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: minHeight),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1200),
+                child: child,
+              ),
+            ),
+          ),
+        );
+
+        return scrollable
+            ? SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: content,
+              )
+            : content;
+      },
+    );
+  }
 }
 
-class _HudTopBar extends StatelessWidget {
-  final int currentIndex;
-  const _HudTopBar({required this.currentIndex});
+// ── Top Bar ─────────────────────────────────────────────────────
 
-  static const _sectionNames = ['ABOUT ME', 'CAREER LOGS', 'PROJECTS', 'SKILLS MATRIX', 'CONTACT'];
+class _TopBar extends StatelessWidget {
+  final int currentIndex;
+  final List<String> sectionNames;
+  final bool isWide;
+  const _TopBar(
+      {required this.currentIndex,
+      required this.sectionNames,
+      required this.isWide});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top + 6,
-        left: 16,
+        top: MediaQuery.of(context).padding.top + 8,
+        left: isWide ? 16 : 16,
         right: 16,
-        bottom: 8,
+        bottom: 10,
       ),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xE0020208), Color(0x00020208)],
+          colors: [Color(0xEE020208), Color(0x00020208)],
         ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('ANIK SHAKYA // PORTFOLIO',
-              style: HudTextStyles.mono(10).copyWith(
-                shadows: [const Shadow(color: HudColors.cyan, blurRadius: 8)],
-              )),
-          Text(_sectionNames[currentIndex], style: HudTextStyles.mono(10)),
+          Text(
+            'ANIK SHAKYA // PORTFOLIO',
+            style: HudTextStyles.mono(10).copyWith(
+              shadows: [const Shadow(color: HudColors.cyan, blurRadius: 8)],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              border: Border.all(color: HudColors.cyan.withOpacity(0.25)),
+              borderRadius: BorderRadius.circular(3),
+              color: HudColors.cyan.withOpacity(0.05),
+            ),
+            child:
+                Text(sectionNames[currentIndex], style: HudTextStyles.mono(9)),
+          ),
         ],
       ),
     );
   }
 }
 
-class _MobileBottomNav extends StatelessWidget {
+// ── Mobile Bottom Nav ────────────────────────────────────────────
+
+class _BottomNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
-  const _MobileBottomNav({required this.currentIndex, required this.onTap});
+  const _BottomNav({required this.currentIndex, required this.onTap});
 
   static const _items = [
     (Icons.person_outline_rounded, 'About'),
@@ -202,36 +260,37 @@ class _MobileBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).padding.bottom,
-        top: 4,
-      ),
+          bottom: MediaQuery.of(context).padding.bottom, top: 4),
       decoration: const BoxDecoration(
-        color: Color(0xF0040A1A),
+        color: Color(0xF5030810),
         border: Border(top: BorderSide(color: Color(0x3300F0FF))),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: List.generate(_items.length, (i) {
-          final isActive = i == currentIndex;
+          final active = i == currentIndex;
           return GestureDetector(
             onTap: () => onTap(i),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
-                color: isActive ? HudColors.cyan.withOpacity(0.1) : Colors.transparent,
+                color: active
+                    ? HudColors.cyan.withOpacity(0.1)
+                    : Colors.transparent,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(_items[i].$1,
-                      color: isActive ? HudColors.cyan : HudColors.textMuted,
-                      size: 22),
-                  const SizedBox(height: 3),
+                      color: active ? HudColors.cyan : HudColors.textMuted,
+                      size: 20),
+                  const SizedBox(height: 2),
                   Text(_items[i].$2,
-                      style: HudTextStyles.mono(8,
-                          color: isActive ? HudColors.cyan : HudColors.textMuted)),
+                      style: HudTextStyles.mono(7,
+                          color:
+                              active ? HudColors.cyan : HudColors.textMuted)),
                 ],
               ),
             ),

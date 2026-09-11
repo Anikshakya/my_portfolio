@@ -1,118 +1,384 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/hud_theme.dart';
-import '../widgets/hud_panel.dart';
 import '../widgets/hud_chip.dart';
+import '../widgets/hud_panel.dart';
 import '../widgets/glow_text.dart';
+import '../widgets/scroll_animate.dart';
 import '../data/skills_data.dart';
 
 class SkillsScreen extends StatefulWidget {
   const SkillsScreen({super.key});
+
   @override
   State<SkillsScreen> createState() => _SkillsScreenState();
 }
 
 class _SkillsScreenState extends State<SkillsScreen> {
   String _selectedCategory = 'All Skills';
+  final PageController _skillsPageController = PageController();
+  int _currentPage = 0;
 
   List<Skill> get _filtered => _selectedCategory == 'All Skills'
       ? allSkills
       : allSkills.where((s) => s.category == _selectedCategory).toList();
 
   @override
+  void dispose() {
+    _skillsPageController.dispose();
+    super.dispose();
+  }
+
+  // 9 items per page (3x3 grid on wide screen, 1x9 vertical list on mobile screen)
+  int get _itemsPerPage => 9;
+  int get _pageCount => (_filtered.length / _itemsPerPage).ceil();
+  bool get _hasPreviousPage => _currentPage > 0;
+  bool get _hasNextPage => _currentPage < _pageCount - 1;
+
+  void _selectCategory(String category) {
+    setState(() {
+      _selectedCategory = category;
+      _currentPage = 0;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _skillsPageController.hasClients) {
+        _skillsPageController.jumpToPage(0);
+      }
+    });
+  }
+
+  void _goToPage(int page) {
+    if (!_skillsPageController.hasClients) return;
+    _skillsPageController.animateToPage(
+      page,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 60, 16, 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          HudPanel(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    final isWide = MediaQuery.of(context).size.width > 700;
+    final hPad = isWide ? 56.0 : 24.0;
+
+    // Dynamic grid parameters to ensure accurate vertical centering
+    final double cardExtent = isWide ? 152.0 : 160.0;
+    final int rowsCount = isWide ? 3 : 9;
+    const double gridSpacing = 14.0;
+
+    // Height calculated based on responsive grid layout
+    final double dynamicCarouselHeight =
+        (cardExtent * rowsCount) + (gridSpacing * (rowsCount - 1)) + 16.0;
+
+    return SizedBox(
+      height: MediaQuery.of(context).size.height - 100,
+      child: Center(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: hPad, vertical: 24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1100),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                _pageHeader(),
+                const SizedBox(height: 24),
+                ScrollAnimate(
+                  key: const ValueKey('skills_filter'),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: skillCategories
+                          .map((cat) => Padding(
+                                padding: const EdgeInsets.only(right: 8),
+                                child: _HoverableHudChip(
+                                  label: cat,
+                                  isActive: _selectedCategory == cat,
+                                  onTap: () => _selectCategory(cat),
+                                ),
+                              ))
+                          .toList(),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
+
+                // Carousel & Overlapping Arrows Stack
+                Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.center,
                   children: [
-                    Text('SYSTEMS_DIAGNOSTICS // SKILLS_MATRIX', style: HudTextStyles.mono(10)),
-                    const SizedBox(height: 4),
-                    GlowText('TECHNICAL SKILLS & STACK',
-                        style: HudTextStyles.header(16), glowColor: HudColors.cyan),
+                    // Dynamic-height Skills Grid Container
+                    SizedBox(
+                      height: dynamicCarouselHeight,
+                      child: PageView.builder(
+                        controller: _skillsPageController,
+                        itemCount: _pageCount == 0 ? 1 : _pageCount,
+                        onPageChanged: (page) =>
+                            setState(() => _currentPage = page),
+                        itemBuilder: (_, page) {
+                          final start = page * _itemsPerPage;
+                          final end =
+                              (start + _itemsPerPage).clamp(0, _filtered.length);
+                          final pageSkills = _filtered.sublist(start, end);
+
+                          return GridView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: isWide ? 3 : 1,
+                              mainAxisSpacing: gridSpacing,
+                              crossAxisSpacing: gridSpacing,
+                              mainAxisExtent: cardExtent,
+                            ),
+                            itemCount: pageSkills.length,
+                            itemBuilder: (_, i) => ScrollAnimate(
+                              key: ValueKey('skill_${pageSkills[i].name}'),
+                              delay: Duration(milliseconds: i * 40),
+                              child: _SkillCard(skill: pageSkills[i]),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+
+                    // Navigation Arrows (Animated after cards completion)
+                    if (_hasPreviousPage)
+                      Positioned(
+                        left: -20,
+                        child: ScrollAnimate(
+                          key: ValueKey('prev_arrow_$_currentPage'),
+                          delay: Duration(
+                              milliseconds:
+                                  (_filtered.length < 9 ? _filtered.length : 9) *
+                                          40 +
+                                      100),
+                          child: _HoverableCarouselArrow(
+                            icon: Icons.arrow_back_ios_new_rounded,
+                            tooltip: 'Previous skills',
+                            onPressed: () => _goToPage(_currentPage - 1),
+                          ),
+                        ),
+                      ),
+
+                    if (_hasNextPage)
+                      Positioned(
+                        right: -20,
+                        child: ScrollAnimate(
+                          key: ValueKey('next_arrow_$_currentPage'),
+                          delay: Duration(
+                              milliseconds:
+                                  (_filtered.length < 9 ? _filtered.length : 9) *
+                                          40 +
+                                      100),
+                          child: _HoverableCarouselArrow(
+                            icon: Icons.arrow_forward_ios_rounded,
+                            tooltip: 'More skills',
+                            onPressed: () => _goToPage(_currentPage + 1),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
-                Text('${_filtered.length} / ${allSkills.length} NODES',
-                    style: HudTextStyles.mono(10)),
               ],
             ),
-          ).animate().fadeIn(duration: 500.ms),
-          const SizedBox(height: 12),
-          // Category chips
-          HudPanel(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: skillCategories.map((cat) => Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: HudChip(
-                        label: cat,
-                        isActive: _selectedCategory == cat,
-                        onTap: () => setState(() => _selectedCategory = cat),
-                      ),
-                    )).toList(),
-              ),
-            ),
-          ).animate().fadeIn(duration: 500.ms, delay: 100.ms),
-          const SizedBox(height: 12),
-          // Skill cards grid
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 320,
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-              childAspectRatio: 1.2,
-            ),
-            itemCount: _filtered.length,
-            itemBuilder: (_, i) => _SkillCard(skill: _filtered[i])
-                .animate()
-                .fadeIn(duration: 400.ms, delay: Duration(milliseconds: i * 50))
-                .slideY(begin: 0.06),
           ),
-        ],
+        ),
+      ),
+    );
+  }
+
+  Widget _pageHeader() => ScrollAnimate(
+        key: const ValueKey('skills_header'),
+        child: SizedBox(
+          width: double.infinity,
+          child: HudPanel(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('SYSTEMS DIAGNOSTICS // SKILLS MATRIX',
+                    style: HudTextStyles.mono(10)),
+                const SizedBox(height: 4),
+                GlowText('SKILLS & STACK',
+                    style: HudTextStyles.header(18), glowColor: HudColors.cyan),
+              ],
+            ),
+          ),
+        ),
+      );
+}
+
+// ── Hoverable Wrapper for Category Chips ────────────────────────────────
+
+class _HoverableHudChip extends StatefulWidget {
+  final String label;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const _HoverableHudChip({
+    required this.label,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  @override
+  State<_HoverableHudChip> createState() => _HoverableHudChipState();
+}
+
+class _HoverableHudChipState extends State<_HoverableHudChip> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      cursor: SystemMouseCursors.click,
+      child: AnimatedScale(
+        scale: _isHovered ? 1.05 : 1.0,
+        duration: const Duration(milliseconds: 150),
+        curve: Curves.easeOutCubic,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(6),
+            color: _isHovered && !widget.isActive
+                ? HudColors.cyan.withOpacity(0.12)
+                : Colors.transparent,
+            border: Border.all(
+              color: _isHovered && !widget.isActive
+                  ? HudColors.cyan.withOpacity(0.5)
+                  : Colors.transparent,
+              width: 1,
+            ),
+          ),
+          child: HudChip(
+            label: widget.label,
+            isActive: widget.isActive,
+            onTap: widget.onTap,
+          ),
+        ),
       ),
     );
   }
 }
 
+// ── Hoverable Navigation Arrow ───────────────────────────────────────────
+
+class _HoverableCarouselArrow extends StatefulWidget {
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onPressed;
+
+  const _HoverableCarouselArrow({
+    required this.icon,
+    required this.tooltip,
+    required this.onPressed,
+  });
+
+  @override
+  State<_HoverableCarouselArrow> createState() =>
+      _HoverableCarouselArrowState();
+}
+
+class _HoverableCarouselArrowState extends State<_HoverableCarouselArrow> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: widget.onPressed,
+        child: Tooltip(
+          message: widget.tooltip,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOutCubic,
+            width: 44,
+            height: 44,
+            transform: _isHovered
+                ? (Matrix4.identity()..scale(1.15))
+                : Matrix4.identity(),
+            transformAlignment: Alignment.center,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: _isHovered
+                  ? HudColors.cyan.withOpacity(0.2)
+                  : HudColors.background.withOpacity(0.95),
+              border: Border.all(
+                color: _isHovered
+                    ? HudColors.cyan
+                    : HudColors.cyan.withOpacity(0.5),
+                width: _isHovered ? 2.0 : 1.5,
+              ),
+              boxShadow: _isHovered
+                  ? [
+                      BoxShadow(
+                        color: HudColors.cyan.withOpacity(0.4),
+                        blurRadius: 16,
+                        spreadRadius: 2,
+                      ),
+                    ]
+                  : [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.35),
+                        blurRadius: 8,
+                      ),
+                    ],
+            ),
+            child: ClipOval(
+              child: Center(
+                child: Icon(
+                  widget.icon,
+                  color: HudColors.cyan,
+                  size: 18,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Skill Card ───────────────────────────────────────────────────────────
+
 class _SkillCard extends StatefulWidget {
   final Skill skill;
   const _SkillCard({required this.skill});
+
   @override
   State<_SkillCard> createState() => _SkillCardState();
 }
 
-class _SkillCardState extends State<_SkillCard> with SingleTickerProviderStateMixin {
-  late AnimationController _barCtrl;
-  late Animation<double> _barAnim;
+class _SkillCardState extends State<_SkillCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<double> _bar;
   bool _hovered = false;
 
   @override
   void initState() {
     super.initState();
-    _barCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200));
-    _barAnim = Tween(begin: 0.0, end: widget.skill.level)
-        .animate(CurvedAnimation(parent: _barCtrl, curve: Curves.easeOutCubic));
-    Future.delayed(const Duration(milliseconds: 200), () {
-      if (mounted) _barCtrl.forward();
+    _ctrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1100));
+    _bar = Tween(begin: 0.0, end: widget.skill.level)
+        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
+    Future.delayed(const Duration(milliseconds: 150), () {
+      if (mounted) _ctrl.forward();
     });
   }
 
   @override
   void dispose() {
-    _barCtrl.dispose();
+    _ctrl.dispose();
     super.dispose();
   }
 
@@ -120,111 +386,118 @@ class _SkillCardState extends State<_SkillCard> with SingleTickerProviderStateMi
   Widget build(BuildContext context) {
     final skill = widget.skill;
     final isExpert = skill.levelLabel == 'Expert';
+    final accentColor = isExpert ? HudColors.cyan : HudColors.magenta;
+
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(12),
-        transform: _hovered ? (Matrix4.identity()..translate(0.0, -4.0)) : Matrix4.identity(),
+        padding: const EdgeInsets.all(14),
+        transform: _hovered
+            ? (Matrix4.identity()..translate(0, -5))
+            : Matrix4.identity(),
         decoration: BoxDecoration(
-          color: _hovered ? const Color(0xA6040818) : const Color(0x80020208),
-          borderRadius: BorderRadius.circular(7),
+          color: _hovered ? const Color(0xFF070F28) : HudColors.panelBg,
+          borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: _hovered ? HudColors.cyan : HudColors.cyan.withOpacity(0.15),
+            color: _hovered ? accentColor : HudColors.borderCyan,
+            width: _hovered ? 1.5 : 1,
           ),
           boxShadow: _hovered
-              ? [BoxShadow(color: HudColors.cyan.withOpacity(0.25), blurRadius: 14)]
-              : [BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 6)],
+              ? [BoxShadow(color: accentColor.withOpacity(0.2), blurRadius: 18)]
+              : [
+                  BoxShadow(
+                      color: Colors.black.withOpacity(0.35), blurRadius: 8)
+                ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // Header row: icon, name, badge
-            Row(
-              children: [
-                Container(
-                  width: 28, height: 28,
-                  decoration: BoxDecoration(
-                    color: skill.color.withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(color: skill.color.withOpacity(0.3)),
-                  ),
-                  child: Icon(Icons.bolt, color: skill.color, size: 15),
+            Row(children: [
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: skill.color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: skill.color.withOpacity(0.3)),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(skill.name,
-                      style: HudTextStyles.header(11, weight: FontWeight.w700),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis),
+                child: Icon(Icons.bolt, color: skill.color, size: 14),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  skill.name,
+                  style: HudTextStyles.header(11, weight: FontWeight.w700),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: (isExpert ? HudColors.cyan : HudColors.magenta).withOpacity(0.1),
-                    border: Border.all(
-                        color: (isExpert ? HudColors.cyan : HudColors.magenta).withOpacity(0.35)),
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                  child: Text(skill.levelLabel,
-                      style: HudTextStyles.mono(8,
-                          color: isExpert ? HudColors.cyan : HudColors.magenta)
-                          .copyWith(fontWeight: FontWeight.bold)),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                decoration: BoxDecoration(
+                  color: accentColor.withOpacity(0.08),
+                  border: Border.all(color: accentColor.withOpacity(0.3)),
+                  borderRadius: BorderRadius.circular(3),
                 ),
-              ],
-            ),
+                child: Text(
+                  skill.levelLabel,
+                  style: HudTextStyles.mono(7, color: accentColor)
+                      .copyWith(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ]),
             const SizedBox(height: 6),
-            // Description
-            Expanded(
-              child: Text(skill.description,
-                  style: HudTextStyles.body(11, color: HudColors.textMuted),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis),
+            Text(
+              skill.description,
+              style: HudTextStyles.body(10, color: HudColors.textMuted),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 6),
-            // Progress bar
+            const SizedBox(height: 8),
             AnimatedBuilder(
-              animation: _barAnim,
-              builder: (_, __) => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              animation: _bar,
+              builder: (_, __) => Row(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(3),
-                          child: LinearProgressIndicator(
-                            value: _barAnim.value,
-                            minHeight: 5,
-                            backgroundColor: Colors.white.withOpacity(0.06),
-                            valueColor: AlwaysStoppedAnimation(skill.color),
-                          ),
-                        ),
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(3),
+                      child: LinearProgressIndicator(
+                        value: _bar.value,
+                        minHeight: 4,
+                        backgroundColor: Colors.white.withOpacity(0.05),
+                        valueColor: AlwaysStoppedAnimation(skill.color),
                       ),
-                      const SizedBox(width: 8),
-                      Text('${(skill.level * 100).round()}%',
-                          style: HudTextStyles.mono(9, color: HudColors.textMain)
-                              .copyWith(fontWeight: FontWeight.bold)),
-                    ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${(skill.level * 100).round()}%',
+                    style: HudTextStyles.mono(8)
+                        .copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 6),
-            // Tags
+            const SizedBox(height: 8),
             Wrap(
               spacing: 4,
-              runSpacing: 3,
-              children: skill.tags.map((tag) => Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: HudColors.cyan.withOpacity(0.05),
-                      border: Border.all(color: HudColors.cyan.withOpacity(0.15)),
-                      borderRadius: BorderRadius.circular(3),
-                    ),
-                    child: Text(tag, style: HudTextStyles.mono(8)),
-                  )).toList(),
+              runSpacing: 4,
+              children: skill.tags
+                  .map((tag) => Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: HudColors.cyan.withOpacity(0.04),
+                          border: Border.all(
+                              color: HudColors.cyan.withOpacity(0.12)),
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                        child: Text(tag, style: HudTextStyles.mono(7)),
+                      ))
+                  .toList(),
             ),
           ],
         ),

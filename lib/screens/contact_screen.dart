@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../theme/hud_theme.dart';
 import '../widgets/hud_panel.dart';
@@ -7,6 +6,7 @@ import '../widgets/glow_text.dart';
 
 class ContactScreen extends StatefulWidget {
   const ContactScreen({super.key});
+
   @override
   State<ContactScreen> createState() => _ContactScreenState();
 }
@@ -28,14 +28,17 @@ class _ContactScreenState extends State<ContactScreen> {
 
   Future<void> _launch(String url) async {
     final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _status = 'SENDING');
     await Future.delayed(const Duration(milliseconds: 600));
-    final subject = Uri.encodeComponent('Portfolio Inquiry from ${_nameCtrl.text}');
+    final subject =
+        Uri.encodeComponent('Portfolio Inquiry from ${_nameCtrl.text}');
     final body = Uri.encodeComponent(
         'Hi Anik,\n\nI\'m reaching out through your portfolio.\n\n${_messageCtrl.text}\n\nBest regards,\n${_nameCtrl.text}\n${_emailCtrl.text}');
     final mailtoUrl = 'mailto:aniklinkin@gmail.com?subject=$subject&body=$body';
@@ -60,9 +63,24 @@ class _ContactScreenState extends State<ContactScreen> {
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label,
-              style: HudTextStyles.mono(10).copyWith(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 5),
+          Row(
+            children: [
+              Container(
+                width: 4,
+                height: 10,
+                color: HudColors.cyan,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: HudTextStyles.mono(10).copyWith(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.1,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
           TextFormField(
             controller: controller,
             maxLines: maxLines,
@@ -71,18 +89,20 @@ class _ContactScreenState extends State<ContactScreen> {
             style: HudTextStyles.body(13),
             cursorColor: HudColors.cyan,
             decoration: InputDecoration(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(4),
                 borderSide: BorderSide(color: HudColors.cyan.withOpacity(0.25)),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(4),
-                borderSide: const BorderSide(color: HudColors.cyan),
+                borderSide: const BorderSide(color: HudColors.cyan, width: 1.5),
               ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(4),
-                borderSide: BorderSide(color: HudColors.magenta.withOpacity(0.6)),
+                borderSide:
+                    BorderSide(color: HudColors.magenta.withOpacity(0.6)),
               ),
               focusedErrorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(4),
@@ -97,39 +117,94 @@ class _ContactScreenState extends State<ContactScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 60, 16, 16),
+    final isWide = MediaQuery.of(context).size.width > 700;
+    final hPad = isWide ? 56.0 : 24.0;
+
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // ── Main Content Container ──────────────────────────────
+          Padding(
+            padding: EdgeInsets.fromLTRB(hPad, 24, hPad, 40),
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 650),
+                constraints: const BoxConstraints(maxWidth: 780),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header
-                    HudPanel(
+                    // ── Unified HUD Header ──────────────────────────────────────
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 16),
+                      decoration: BoxDecoration(
+                        color: const Color(0x99020208),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                            color: HudColors.cyan.withOpacity(0.3)),
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('GET IN TOUCH // CONTACT', style: HudTextStyles.mono(10)),
-                          const SizedBox(height: 6),
-                          GlowText('GET IN TOUCH',
-                              style: HudTextStyles.header(20, color: HudColors.magenta),
-                              glowColor: HudColors.magenta),
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: HudColors.cyan.withOpacity(0.12),
+                                  borderRadius: BorderRadius.circular(3),
+                                  border: Border.all(
+                                      color: HudColors.cyan.withOpacity(0.4)),
+                                ),
+                                child: Text(
+                                  'SECTION // 05',
+                                  style: HudTextStyles.mono(9,
+                                      color: HudColors.cyan),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'COMMUNICATION LINK',
+                                style: HudTextStyles.mono(9,
+                                    color: HudColors.textMuted),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          GlowText(
+                            'GET IN TOUCH',
+                            style: HudTextStyles.header(
+                              22,
+                              color: HudColors.magenta,
+                            ),
+                            glowColor: HudColors.magenta,
+                          ),
                           const SizedBox(height: 8),
                           RichText(
                             text: TextSpan(
-                              style: HudTextStyles.body(12.5, color: HudColors.textMuted),
+                              style: HudTextStyles.body(
+                                13,
+                                color: HudColors.textMuted,
+                              ).copyWith(height: 1.5),
                               children: const [
-                                TextSpan(text: 'Have a project in mind? Fill the form or email directly to '),
+                                TextSpan(
+                                  text:
+                                      'Have a project in mind or want to collaborate? Direct transmission open via form below or email to ',
+                                ),
                                 TextSpan(
                                   text: 'aniklinkin@gmail.com',
                                   style: TextStyle(
                                     color: HudColors.cyan,
                                     fontWeight: FontWeight.w600,
-                                    shadows: [Shadow(color: HudColors.cyan, blurRadius: 8)],
+                                    shadows: [
+                                      Shadow(
+                                        color: HudColors.cyan,
+                                        blurRadius: 8,
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
@@ -137,177 +212,192 @@ class _ContactScreenState extends State<ContactScreen> {
                           ),
                         ],
                       ),
-                    ).animate().fadeIn(duration: 500.ms),
-                    const SizedBox(height: 12),
-                    // Contact cards grid
+                    ),
+                    const SizedBox(height: 16),
+                    // ── Contact Quick Cards ────────────────────────────────
                     GridView.count(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                      childAspectRatio: 3.5,
+                      crossAxisCount: isWide ? 4 : 2,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                      childAspectRatio: isWide ? 2.6 : 2.6,
                       children: [
-                        _contactCard('PHONE', '+977 9863021878', 'tel:+9779863021878'),
-                        _contactCard('EMAIL', 'aniklinkin@gmail.com', 'mailto:aniklinkin@gmail.com'),
-                        _contactCard('LINKEDIN', 'Anik Shakya',
-                            'https://www.linkedin.com/in/anik-shakya-67141b192/'),
-                        _contactCard('INSTAGRAM', '@anik_shakya_',
-                            'https://www.instagram.com/anik_shakya_'),
+                        _HoverContactCard(
+                          label: 'PHONE',
+                          value: '+977 9863021878',
+                          url: 'tel:+9779863021878',
+                          icon: Icons.phone_outlined,
+                          onTap: () => _launch('tel:+9779863021878'),
+                        ),
+                        _HoverContactCard(
+                          label: 'EMAIL',
+                          value: 'aniklinkin@gmail.com',
+                          url: 'mailto:aniklinkin@gmail.com',
+                          icon: Icons.email_outlined,
+                          onTap: () => _launch('mailto:aniklinkin@gmail.com'),
+                        ),
+                        _HoverContactCard(
+                          label: 'LINKEDIN',
+                          value: 'Anik Shakya',
+                          url:
+                              'https://www.linkedin.com/in/anik-shakya-67141b192/',
+                          icon: Icons.work_outline,
+                          onTap: () => _launch(
+                              'https://www.linkedin.com/in/anik-shakya-67141b192/'),
+                        ),
+                        _HoverContactCard(
+                          label: 'INSTAGRAM',
+                          value: '@anik_shakya_',
+                          url: 'https://www.instagram.com/anik_shakya_',
+                          icon: Icons.camera_alt_outlined,
+                          onTap: () => _launch(
+                              'https://www.instagram.com/anik_shakya_'),
+                        ),
                       ],
-                    ).animate().fadeIn(duration: 500.ms, delay: 100.ms),
-                    const SizedBox(height: 12),
-                    // Form panel
+                    ),
+                    const SizedBox(height: 16),
+                    // ── Scaled & Compact Form Panel ───────────────────────────────────
                     HudPanel(
-                      child: _status == 'READY'
-                          ? Form(
-                              key: _formKey,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  _inputField(
-                                    label: 'YOUR NAME',
-                                    controller: _nameCtrl,
-                                    validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-                                  ),
-                                  const SizedBox(height: 12),
-                                  _inputField(
-                                    label: 'YOUR EMAIL ADDRESS',
-                                    controller: _emailCtrl,
-                                    keyboardType: TextInputType.emailAddress,
-                                    validator: (v) {
-                                      if (v == null || v.isEmpty) return 'Required';
-                                      if (!v.contains('@')) return 'Invalid email';
-                                      return null;
-                                    },
-                                  ),
-                                  const SizedBox(height: 12),
-                                  _inputField(
-                                    label: 'TRANSMISSION MESSAGE',
-                                    controller: _messageCtrl,
-                                    maxLines: 3,
-                                    validator: (v) => (v == null || v.isEmpty) ? 'Required' : null,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  SizedBox(
-                                    width: double.infinity,
-                                    child: GestureDetector(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 4, vertical: 4),
+                        child: _status == 'READY'
+                            ? Form(
+                                key: _formKey,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _inputField(
+                                      label: 'YOUR NAME',
+                                      controller: _nameCtrl,
+                                      validator: (v) => (v == null || v.isEmpty)
+                                          ? 'Required'
+                                          : null,
+                                    ),
+                                    const SizedBox(height: 14),
+                                    _inputField(
+                                      label: 'YOUR EMAIL ADDRESS',
+                                      controller: _emailCtrl,
+                                      keyboardType: TextInputType.emailAddress,
+                                      validator: (v) {
+                                        if (v == null || v.isEmpty) {
+                                          return 'Required';
+                                        }
+                                        if (!v.contains('@')) {
+                                          return 'Invalid email address';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                    const SizedBox(height: 14),
+                                    _inputField(
+                                      label: 'TRANSMISSION MESSAGE',
+                                      controller: _messageCtrl,
+                                      maxLines: 4,
+                                      validator: (v) => (v == null || v.isEmpty)
+                                          ? 'Required'
+                                          : null,
+                                    ),
+                                    const SizedBox(height: 18),
+                                    _HoverButton(
+                                      label: 'TRANSMIT MESSAGE',
+                                      color: HudColors.magenta,
                                       onTap: _submit,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(vertical: 12),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(color: HudColors.magenta),
-                                          borderRadius: BorderRadius.circular(5),
-                                          color: HudColors.magenta.withOpacity(0.08),
-                                        ),
-                                        child: Text('TRANSMIT MESSAGE',
-                                            textAlign: TextAlign.center,
-                                            style: HudTextStyles.mono(12, color: HudColors.magenta)
-                                                .copyWith(fontWeight: FontWeight.bold)),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : _status == 'SENDING'
+                                ? Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 36),
+                                    child: Center(
+                                      child: Column(
+                                        children: [
+                                          const CircularProgressIndicator(
+                                              color: HudColors.cyan,
+                                              strokeWidth: 2),
+                                          const SizedBox(height: 16),
+                                          Text(
+                                            'INITIALIZING TRANSMISSION...',
+                                            style: HudTextStyles.mono(12),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                : Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 32),
+                                    child: Center(
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            width: 52,
+                                            height: 52,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: HudColors.green
+                                                  .withOpacity(0.1),
+                                              border: Border.all(
+                                                  color: HudColors.green,
+                                                  width: 1.5),
+                                            ),
+                                            child: const Icon(
+                                              Icons.check,
+                                              color: HudColors.green,
+                                              size: 24,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 14),
+                                          Text(
+                                            'EMAIL CLIENT OPENED',
+                                            style: HudTextStyles.header(15,
+                                                color: Colors.white),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            'Message pre-filled for aniklinkin@gmail.com',
+                                            style: HudTextStyles.body(
+                                              12,
+                                              color: HudColors.textMuted,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 18),
+                                          _HoverButton(
+                                            label: 'SEND ANOTHER MESSAGE',
+                                            color: HudColors.cyan,
+                                            onTap: _reset,
+                                            isFullWidth: false,
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
-                            )
-                          : _status == 'SENDING'
-                              ? Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 30),
-                                  child: Center(
-                                    child: Column(
-                                      children: [
-                                        const CircularProgressIndicator(
-                                            color: HudColors.cyan, strokeWidth: 2),
-                                        const SizedBox(height: 14),
-                                        Text('INITIALIZING TRANSMISSION...',
-                                            style: HudTextStyles.mono(13)),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              : Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 24),
-                                  child: Center(
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          width: 52, height: 52,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: HudColors.green.withOpacity(0.1),
-                                            border: Border.all(color: HudColors.green, width: 2),
-                                          ),
-                                          child: const Icon(Icons.check, color: HudColors.green, size: 24),
-                                        ),
-                                        const SizedBox(height: 12),
-                                        Text('EMAIL CLIENT OPENED',
-                                            style: HudTextStyles.header(16, color: Colors.white)),
-                                        const SizedBox(height: 6),
-                                        Text('Message prepared for aniklinkin@gmail.com',
-                                            style: HudTextStyles.body(12, color: HudColors.textMuted)),
-                                        const SizedBox(height: 16),
-                                        GestureDetector(
-                                          onTap: _reset,
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(color: HudColors.cyan),
-                                              borderRadius: BorderRadius.circular(5),
-                                            ),
-                                            child: Text('SEND ANOTHER MESSAGE',
-                                                style: HudTextStyles.mono(11)),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                    ).animate().fadeIn(duration: 500.ms, delay: 150.ms),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
           ),
-        ),
-        // Full-width footer
-        _footer(),
-      ],
+          // ── Footer Section ──────────────────────────────────
+          _footer(),
+        ],
+      ),
     );
   }
 
-  Widget _contactCard(String label, String value, String url) => GestureDetector(
-        onTap: () => _launch(url),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          decoration: BoxDecoration(
-            color: const Color(0x80020208),
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: HudColors.cyan.withOpacity(0.2)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('$label ↗', style: HudTextStyles.mono(8, color: HudColors.cyan)),
-              const SizedBox(height: 2),
-              Text(value,
-                  style: HudTextStyles.body(11, color: Colors.white).copyWith(fontWeight: FontWeight.w500),
-                  overflow: TextOverflow.ellipsis),
-            ],
-          ),
-        ),
-      );
-
   Widget _footer() => Container(
         width: double.infinity,
-        padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
         decoration: const BoxDecoration(
           color: Color(0xD9020208),
           border: Border(top: BorderSide(color: Color(0x4D00F0FF))),
         ),
         child: Column(
           children: [
-            // Top row: identity + contact + socials
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -315,81 +405,394 @@ class _ContactScreenState extends State<ContactScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    GlowText('ANIK SHAKYA',
-                        style: HudTextStyles.header(14), glowColor: HudColors.cyan),
-                    const SizedBox(height: 2),
-                    Text('SENIOR FLUTTER & CROSS-PLATFORM DEVELOPER',
-                        style: HudTextStyles.mono(8, color: HudColors.cyan)),
+                    GlowText(
+                      'ANIK SHAKYA',
+                      style: HudTextStyles.header(15),
+                      glowColor: HudColors.cyan,
+                    ),
                     const SizedBox(height: 3),
-                    Text('Naghbahal, Lalitpur, Nepal',
-                        style: HudTextStyles.mono(9, color: HudColors.textMuted)),
+                    Text(
+                      'SENIOR FLUTTER & CROSS-PLATFORM DEVELOPER',
+                      style: HudTextStyles.mono(
+                        8,
+                        color: HudColors.cyan,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Naghbahal, Lalitpur, Nepal',
+                      style: HudTextStyles.mono(
+                        9,
+                        color: HudColors.textMuted,
+                      ),
+                    ),
                   ],
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('DIRECT CONTACT', style: HudTextStyles.mono(8, color: HudColors.cyan)),
-                    const SizedBox(height: 4),
-                    GestureDetector(
-                      onTap: () => _launch('mailto:aniklinkin@gmail.com'),
-                      child: Text('aniklinkin@gmail.com',
-                          style: HudTextStyles.mono(10, color: Colors.white)),
+                    Text(
+                      'DIRECT CONTACT',
+                      style: HudTextStyles.mono(
+                        8,
+                        color: HudColors.cyan,
+                      ),
                     ),
-                    const SizedBox(height: 2),
-                    GestureDetector(
+                    const SizedBox(height: 5),
+                    _HoverTextLink(
+                      text: 'aniklinkin@gmail.com',
+                      onTap: () => _launch('mailto:aniklinkin@gmail.com'),
+                    ),
+                    const SizedBox(height: 3),
+                    _HoverTextLink(
+                      text: '+977 9863021878',
                       onTap: () => _launch('tel:+9779863021878'),
-                      child: Text('+977 9863021878',
-                          style: HudTextStyles.mono(10, color: Colors.white)),
                     ),
                   ],
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text('SOCIAL NETWORKS',
-                        style: HudTextStyles.mono(8, color: HudColors.magenta)),
+                    Text(
+                      'SOCIAL NETWORKS',
+                      style: HudTextStyles.mono(
+                        8,
+                        color: HudColors.magenta,
+                      ),
+                    ),
                     const SizedBox(height: 6),
                     Wrap(
-                      spacing: 6,
+                      spacing: 8,
+                      runSpacing: 8,
                       children: [
-                        _socialBadge('GitHub', 'https://github.com/AnikShakya', HudColors.cyan),
-                        _socialBadge('LinkedIn',
-                            'https://www.linkedin.com/in/anik-shakya-67141b192/', HudColors.magenta),
-                        _socialBadge('Instagram',
-                            'https://www.instagram.com/anik_shakya_', HudColors.amber),
+                        _HoverSocialBadge(
+                          label: 'GitHub',
+                          url: 'https://github.com/AnikShakya',
+                          color: HudColors.cyan,
+                          icon: Icons.code,
+                          onTap: () =>
+                              _launch('https://github.com/AnikShakya'),
+                        ),
+                        _HoverSocialBadge(
+                          label: 'LinkedIn',
+                          url:
+                              'https://www.linkedin.com/in/anik-shakya-67141b192/',
+                          color: HudColors.magenta,
+                          icon: Icons.work,
+                          onTap: () => _launch(
+                              'https://www.linkedin.com/in/anik-shakya-67141b192/'),
+                        ),
+                        _HoverSocialBadge(
+                          label: 'Instagram',
+                          url: 'https://www.instagram.com/anik_shakya_',
+                          color: HudColors.amber,
+                          icon: Icons.camera_alt,
+                          onTap: () => _launch(
+                              'https://www.instagram.com/anik_shakya_'),
+                        ),
                       ],
                     ),
                   ],
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 16),
             const Divider(color: Color(0x14FFFFFF), height: 1),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('© 2026 ANIK SHAKYA // ALL SYSTEMS OPERATIONAL',
-                    style: HudTextStyles.mono(8, color: HudColors.textMuted)),
-                Text('● SYSTEM STATUS: ONLINE',
-                    style: HudTextStyles.mono(8, color: HudColors.green)),
+                Text(
+                  '© 2026 ANIK SHAKYA // ALL SYSTEMS OPERATIONAL',
+                  style: HudTextStyles.mono(
+                    8,
+                    color: HudColors.textMuted,
+                  ),
+                ),
+                Text(
+                  '● SYSTEM STATUS: ONLINE',
+                  style: HudTextStyles.mono(
+                    8,
+                    color: HudColors.green,
+                  ),
+                ),
               ],
             ),
           ],
         ),
       );
+}
 
-  Widget _socialBadge(String label, String url, Color color) => GestureDetector(
-        onTap: () => _launch(url),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+// ── ENHANCED HOVER HELPER WIDGETS ─────────────────────────────────────────────
+
+class _HoverContactCard extends StatefulWidget {
+  final String label;
+  final String value;
+  final String url;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _HoverContactCard({
+    required this.label,
+    required this.value,
+    required this.url,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  State<_HoverContactCard> createState() => _HoverContactCardState();
+}
+
+class _HoverContactCardState extends State<_HoverContactCard> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
-            border: Border.all(color: color),
-            borderRadius: BorderRadius.circular(3),
-            color: color.withOpacity(0.06),
+            color: _isHovered
+                ? HudColors.cyan.withOpacity(0.08)
+                : const Color(0x80020208),
+            borderRadius: BorderRadius.circular(5),
+            border: Border.all(
+              color: _isHovered
+                  ? HudColors.cyan
+                  : HudColors.cyan.withOpacity(0.2),
+              width: _isHovered ? 1.5 : 1.0,
+            ),
+            boxShadow: _isHovered
+                ? [
+                    BoxShadow(
+                      color: HudColors.cyan.withOpacity(0.25),
+                      blurRadius: 10,
+                      spreadRadius: 1,
+                    )
+                  ]
+                : [],
           ),
-          child: Text('$label ↗',
-              style: HudTextStyles.mono(9, color: color).copyWith(fontWeight: FontWeight.bold)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    widget.label,
+                    style: HudTextStyles.mono(
+                      8,
+                      color: _isHovered ? Colors.white : HudColors.cyan,
+                    ),
+                  ),
+                  Icon(
+                    widget.icon,
+                    size: 12,
+                    color: _isHovered ? HudColors.cyan : HudColors.textMuted,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 3),
+              Text(
+                widget.value,
+                style: HudTextStyles.body(
+                  11,
+                  color: _isHovered ? HudColors.cyan : Colors.white,
+                ).copyWith(fontWeight: FontWeight.w500),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
-      );
+      ),
+    );
+  }
+}
+
+class _HoverSocialBadge extends StatefulWidget {
+  final String label;
+  final String url;
+  final Color color;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _HoverSocialBadge({
+    required this.label,
+    required this.url,
+    required this.color,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  State<_HoverSocialBadge> createState() => _HoverSocialBadgeState();
+}
+
+class _HoverSocialBadgeState extends State<_HoverSocialBadge> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            border: Border.all(
+                color: _isHovered ? widget.color : widget.color.withOpacity(0.5),
+                width: 1),
+            borderRadius: BorderRadius.circular(4),
+            color: _isHovered ? widget.color : widget.color.withOpacity(0.08),
+            boxShadow: _isHovered
+                ? [
+                    BoxShadow(
+                      color: widget.color.withOpacity(0.35),
+                      blurRadius: 8,
+                      spreadRadius: 1,
+                    )
+                  ]
+                : [],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                widget.icon,
+                size: 11,
+                color: _isHovered ? Colors.black : widget.color,
+              ),
+              const SizedBox(width: 5),
+              Text(
+                widget.label,
+                style: HudTextStyles.mono(
+                  9,
+                  color: _isHovered ? Colors.black : widget.color,
+                ).copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(width: 3),
+              Text(
+                '↗',
+                style: TextStyle(
+                  fontSize: 9,
+                  color: _isHovered ? Colors.black : widget.color,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HoverButton extends StatefulWidget {
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+  final bool isFullWidth;
+
+  const _HoverButton({
+    required this.label,
+    required this.color,
+    required this.onTap,
+    this.isFullWidth = true,
+  });
+
+  @override
+  State<_HoverButton> createState() => _HoverButtonState();
+}
+
+class _HoverButtonState extends State<_HoverButton> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          width: widget.isFullWidth ? double.infinity : null,
+          padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 22),
+          decoration: BoxDecoration(
+            border: Border.all(color: widget.color, width: 1.5),
+            borderRadius: BorderRadius.circular(4),
+            color: _isHovered ? widget.color : widget.color.withOpacity(0.08),
+            boxShadow: _isHovered
+                ? [
+                    BoxShadow(
+                      color: widget.color.withOpacity(0.4),
+                      blurRadius: 12,
+                      spreadRadius: 1,
+                    )
+                  ]
+                : [],
+          ),
+          child: Text(
+            widget.label,
+            textAlign: TextAlign.center,
+            style: HudTextStyles.mono(
+              12,
+              color: _isHovered ? Colors.black : widget.color,
+            ).copyWith(fontWeight: FontWeight.bold, letterSpacing: 1.1),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HoverTextLink extends StatefulWidget {
+  final String text;
+  final VoidCallback onTap;
+
+  const _HoverTextLink({
+    required this.text,
+    required this.onTap,
+  });
+
+  @override
+  State<_HoverTextLink> createState() => _HoverTextLinkState();
+}
+
+class _HoverTextLinkState extends State<_HoverTextLink> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Text(
+          widget.text,
+          style: HudTextStyles.mono(
+            10,
+            color: _isHovered ? HudColors.cyan : Colors.white,
+          ).copyWith(
+            decoration:
+                _isHovered ? TextDecoration.underline : TextDecoration.none,
+          ),
+        ),
+      ),
+    );
+  }
 }
