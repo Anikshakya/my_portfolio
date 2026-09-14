@@ -348,7 +348,7 @@ class _TopBarState extends State<_TopBar> {
                             const Icon(Icons.language_rounded,
                                 size: 14, color: HudColors.cyan),
                             const SizedBox(width: 5),
-                            Text('WEB',
+                            Text('REACT WEBSITE',
                                 style: HudTextStyles.mono(9,
                                     color: HudColors.cyan)),
                           ],
