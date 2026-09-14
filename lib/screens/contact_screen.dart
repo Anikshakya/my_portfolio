@@ -43,7 +43,7 @@ class _ContactScreenState extends State<ContactScreen> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth > 900;
-        final hPad = isWide ? 40.0 : 16.0;
+        final hPad = isWide ? 40.0 : 24.0;
 
         return SingleChildScrollView(
           padding: EdgeInsets.symmetric(
@@ -61,8 +61,7 @@ class _ContactScreenState extends State<ContactScreen> {
                   AppPageHeader(
                     eyebrow: 'COMMUNICATION CHANNEL',
                     title: 'GET IN TOUCH',
-                    summary:
-                        '// OPEN CHANNEL FOR NEW PROJECTS & COLLABORATION',
+                    summary: '// OPEN CHANNEL FOR NEW PROJECTS & COLLABORATION',
                     isWide: isWide,
                     animationKey: 'contact_header',
                   ),
@@ -178,9 +177,7 @@ class _ContactScreenState extends State<ContactScreen> {
               colorScheme: colorScheme,
               cyanColor: cyanColor,
             ),
-
             const SizedBox(height: 20),
-
             LayoutBuilder(
               builder: (context, constraints) {
                 final compact = constraints.maxWidth < 560;
@@ -285,9 +282,7 @@ class _ContactScreenState extends State<ContactScreen> {
                 );
               },
             ),
-
             const SizedBox(height: 14),
-
             _field(
               controller: _subjectController,
               label: 'SUBJECT',
@@ -302,9 +297,7 @@ class _ContactScreenState extends State<ContactScreen> {
                 return null;
               },
             ),
-
             const SizedBox(height: 14),
-
             _field(
               controller: _messageController,
               label: 'MESSAGE',
@@ -320,9 +313,7 @@ class _ContactScreenState extends State<ContactScreen> {
                 return null;
               },
             ),
-
             const SizedBox(height: 20),
-
             _sendButton(
               colorScheme,
               cyanColor,
@@ -376,9 +367,7 @@ class _ContactScreenState extends State<ContactScreen> {
             letterSpacing: 1.15,
           ),
         ),
-
         const SizedBox(height: 7),
-
         TextFormField(
           controller: controller,
           validator: validator,
@@ -630,16 +619,12 @@ $name
               ],
             ),
           ),
-
           const SizedBox(height: 22),
-
           Divider(
             height: 1,
             color: colorScheme.outline.withOpacity(0.16),
           ),
-
           const SizedBox(height: 18),
-
           _contactDetail(
             icon: Icons.email_outlined,
             label: 'EMAIL',
@@ -653,9 +638,7 @@ $name
               ),
             ),
           ),
-
           const SizedBox(height: 10),
-
           _contactDetail(
             icon: Icons.phone_outlined,
             label: 'PHONE',
@@ -669,9 +652,7 @@ $name
               ),
             ),
           ),
-
           const SizedBox(height: 20),
-
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
@@ -684,16 +665,12 @@ $name
               ),
             ),
           ),
-
           const SizedBox(height: 10),
-
           _socialLinks(
             colorScheme,
             cyanColor,
           ),
-
           const SizedBox(height: 20),
-
           _availabilityCard(
             colorScheme,
             cyanColor,
@@ -1234,8 +1211,7 @@ class _SocialHoverButton extends StatefulWidget {
   });
 
   @override
-  State<_SocialHoverButton> createState() =>
-      _SocialHoverButtonState();
+  State<_SocialHoverButton> createState() => _SocialHoverButtonState();
 }
 
 class _SocialHoverButtonState extends State<_SocialHoverButton> {
@@ -1243,8 +1219,7 @@ class _SocialHoverButtonState extends State<_SocialHoverButton> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark =
-        widget.colorScheme.brightness == Brightness.dark;
+    final isDark = widget.colorScheme.brightness == Brightness.dark;
 
     final normalBackground = isDark
         ? Color.alphaBlend(
@@ -1290,11 +1265,8 @@ class _SocialHoverButtonState extends State<_SocialHoverButton> {
           ),
 
           decoration: BoxDecoration(
-            color: _hovered
-                ? hoverBackground
-                : normalBackground,
+            color: _hovered ? hoverBackground : normalBackground,
             borderRadius: BorderRadius.circular(5),
-
             border: Border.all(
               color: _hovered
                   ? widget.link.color.withOpacity(0.70)
@@ -1303,7 +1275,6 @@ class _SocialHoverButtonState extends State<_SocialHoverButton> {
                     ),
               width: _hovered ? 1.2 : 1.0,
             ),
-
             boxShadow: _hovered
                 ? [
                     BoxShadow(
@@ -1336,9 +1307,7 @@ class _SocialHoverButtonState extends State<_SocialHoverButton> {
                       : widget.colorScheme.onSurface.withOpacity(0.58),
                 ),
               ),
-
               const SizedBox(width: 6),
-
               Flexible(
                 child: Text(
                   widget.link.name,
@@ -1349,15 +1318,12 @@ class _SocialHoverButtonState extends State<_SocialHoverButton> {
                         ? widget.link.color
                         : widget.colorScheme.onSurface.withOpacity(0.72),
                   ).copyWith(
-                    fontWeight:
-                        _hovered ? FontWeight.w600 : FontWeight.w400,
+                    fontWeight: _hovered ? FontWeight.w600 : FontWeight.w400,
                     letterSpacing: 0.8,
                   ),
                 ),
               ),
-
               const SizedBox(width: 4),
-
               AnimatedRotation(
                 turns: _hovered ? 0.08 : 0,
                 duration: const Duration(milliseconds: 180),
@@ -1397,18 +1363,15 @@ class _InteractiveContainer extends StatefulWidget {
   });
 
   @override
-  State<_InteractiveContainer> createState() =>
-      _InteractiveContainerState();
+  State<_InteractiveContainer> createState() => _InteractiveContainerState();
 }
 
-class _InteractiveContainerState
-    extends State<_InteractiveContainer> {
+class _InteractiveContainerState extends State<_InteractiveContainer> {
   bool _hovered = false;
 
   @override
   Widget build(BuildContext context) {
-    final isDark =
-        widget.colorScheme.brightness == Brightness.dark;
+    final isDark = widget.colorScheme.brightness == Brightness.dark;
 
     final normalSurface = isDark
         ? Color.alphaBlend(
@@ -1485,8 +1448,7 @@ class _HoverButtonState extends State<_HoverButton> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark =
-        widget.colorScheme.brightness == Brightness.dark;
+    final isDark = widget.colorScheme.brightness == Brightness.dark;
 
     final normalColor = widget.accentColor.withOpacity(
       isDark ? 0.88 : 0.92,
@@ -1511,9 +1473,7 @@ class _HoverButtonState extends State<_HoverButton> {
               _hovered ? -1.0 : 0.0,
             ),
           decoration: BoxDecoration(
-            color: _hovered
-                ? widget.accentColor
-                : normalColor,
+            color: _hovered ? widget.accentColor : normalColor,
             borderRadius: BorderRadius.circular(6),
             boxShadow: _hovered
                 ? [

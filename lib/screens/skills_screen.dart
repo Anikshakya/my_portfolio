@@ -56,7 +56,7 @@ class _SkillsScreenState extends State<SkillsScreen> {
   @override
   Widget build(BuildContext context) {
     final isWide = MediaQuery.of(context).size.width > 900;
-    final hPad = isWide ? 40.0 : 16.0;
+    final hPad = isWide ? 40.0 : 24.0;
 
     // Dynamic grid parameters to ensure accurate vertical centering
     final double cardExtent = isWide ? 152.0 : 160.0;
@@ -88,37 +88,43 @@ class _SkillsScreenState extends State<SkillsScreen> {
                 ),
                 const SizedBox(height: 24),
                 ScrollAnimate(
-  key: const ValueKey('skills_filter'),
-  child: Container(
-    padding: const EdgeInsets.all(5),
-    decoration: BoxDecoration(
-      color: HudColors.selectionBarSurface,
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(
-        color: HudColors.selectionBarBorder,
-      ),
-    ),
-    child: SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: skillCategories.map((cat) {
-          final isActive = _selectedCategory == cat;
+                  key: const ValueKey('skills_filter'),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: HudColors.selectionBarSurface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: HudColors.selectionBarBorder,
+                        ),
+                      ),
+                      child: SingleChildScrollView(
+                        primary: false,
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(
+                          parent: AlwaysScrollableScrollPhysics(),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: skillCategories.map((cat) {
+                            final isActive = _selectedCategory == cat;
 
-          return Padding(
-            padding: const EdgeInsets.only(right: 4),
-            child: _HoverableHudChip(
-              label: cat,
-              isActive: isActive,
-              onTap: () => _selectCategory(cat),
-            ),
-          );
-        }).toList(),
-      ),
-    ),
-  ),
-),
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 4),
+                              child: _HoverableHudChip(
+                                label: cat,
+                                isActive: isActive,
+                                onTap: () => _selectCategory(cat),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 32),
 
                 // Carousel & Overlapping Arrows Stack

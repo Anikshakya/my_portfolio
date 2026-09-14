@@ -31,8 +31,139 @@
 
   <title>portfolio_flutter</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    :root {
+      --loader-bg: #020208;
+      --loader-surface: #16171b;
+      --loader-gold: #d2bb6f;
+      --loader-muted: #9a9487;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--loader-bg);
+    }
+
+    #app-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      color: var(--loader-gold);
+      background:
+        linear-gradient(135deg, rgba(210, 187, 111, 0.07), transparent 45%),
+        var(--loader-bg);
+      transition: opacity 420ms ease, visibility 420ms ease;
+    }
+
+    #app-loader.is-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-grid {
+      position: absolute;
+      inset: -30%;
+      opacity: 0.12;
+      background-image:
+        linear-gradient(rgba(210, 187, 111, 0.18) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(210, 187, 111, 0.18) 1px, transparent 1px);
+      background-size: 42px 42px;
+      transform: perspective(500px) rotateX(58deg) translateY(20%);
+      transform-origin: center bottom;
+    }
+
+    .loader-content {
+      position: relative;
+      width: min(320px, calc(100vw - 48px));
+      text-align: center;
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    .loader-mark {
+      width: 54px;
+      height: 54px;
+      margin: 0 auto 22px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(210, 187, 111, 0.7);
+      border-radius: 50%;
+      box-shadow: 0 0 28px rgba(210, 187, 111, 0.16);
+      animation: loader-pulse 1.8s ease-in-out infinite;
+    }
+
+    .loader-mark::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--loader-gold);
+      box-shadow: 0 0 18px var(--loader-gold);
+    }
+
+    .loader-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.24em;
+    }
+
+    .loader-status {
+      margin: 10px 0 22px;
+      color: var(--loader-muted);
+      font: 11px/1.4 monospace;
+      letter-spacing: 0.16em;
+    }
+
+    .loader-track {
+      height: 2px;
+      overflow: hidden;
+      background: rgba(210, 187, 111, 0.16);
+    }
+
+    .loader-progress {
+      width: 38%;
+      height: 100%;
+      background: var(--loader-gold);
+      box-shadow: 0 0 12px var(--loader-gold);
+      animation: loader-progress 1.3s ease-in-out infinite;
+    }
+
+    @keyframes loader-pulse {
+      0%, 100% { transform: scale(0.94); opacity: 0.72; }
+      50% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes loader-progress {
+      0% { transform: translateX(-120%); }
+      100% { transform: translateX(360%); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .loader-mark,
+      .loader-progress {
+        animation: none;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div id="app-loader" role="status" aria-label="Loading portfolio">
+    <div class="loader-grid" aria-hidden="true"></div>
+    <div class="loader-content">
+      <div class="loader-mark" aria-hidden="true"></div>
+      <h1 class="loader-title">ANIK SHAKYA</h1>
+      <p class="loader-status">PREPARING EXPERIENCE</p>
+      <div class="loader-track" aria-hidden="true">
+        <div class="loader-progress"></div>
+      </div>
+    </div>
+  </div>
   <!--
     You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader
@@ -42,5 +173,11 @@
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
   <script src="flutter_bootstrap.js" async></script>
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      var loader = document.getElementById('app-loader');
+      if (loader) loader.classList.add('is-hidden');
+    });
+  </script>
 </body>
 </html>

@@ -27,7 +27,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth > 900;
-        final hPad = isWide ? 40.0 : 16.0;
+        final hPad = isWide ? 40.0 : 24.0;
 
         return SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: hPad, vertical: 24.0),

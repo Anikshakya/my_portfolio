@@ -106,7 +106,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       builder: (context, constraints) {
         final isWide = constraints.maxWidth > 900;
 
-        final hPad = isWide ? 40.0 : 16.0;
+        final hPad = isWide ? 40.0 : 24.0;
 
         final displayed = _displayedProjects;
 
