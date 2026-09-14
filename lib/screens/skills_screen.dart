@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/hud_theme.dart';
-import '../widgets/hud_chip.dart';
-import '../widgets/hud_panel.dart';
-import '../widgets/glow_text.dart';
 import '../widgets/scroll_animate.dart';
+import '../widgets/app_page_header.dart';
 import '../data/skills_data.dart';
 
 class SkillsScreen extends StatefulWidget {
@@ -81,26 +79,46 @@ class _SkillsScreenState extends State<SkillsScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
               children: [
-                _pageHeader(),
+                AppPageHeader(
+                  eyebrow: 'SYSTEMS DIAGNOSTICS',
+                  title: 'SKILLS & STACK',
+                  summary: '// ${_filtered.length} CAPABILITIES INDEXED',
+                  isWide: isWide,
+                  animationKey: 'skills_header',
+                ),
                 const SizedBox(height: 24),
                 ScrollAnimate(
-                  key: const ValueKey('skills_filter'),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: skillCategories
-                          .map((cat) => Padding(
-                                padding: const EdgeInsets.only(right: 8),
-                                child: _HoverableHudChip(
-                                  label: cat,
-                                  isActive: _selectedCategory == cat,
-                                  onTap: () => _selectCategory(cat),
-                                ),
-                              ))
-                          .toList(),
-                    ),
-                  ),
-                ),
+  key: const ValueKey('skills_filter'),
+  child: Container(
+    padding: const EdgeInsets.all(5),
+    decoration: BoxDecoration(
+      color: HudColors.selectionBarSurface,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(
+        color: HudColors.selectionBarBorder,
+      ),
+    ),
+    child: SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: skillCategories.map((cat) {
+          final isActive = _selectedCategory == cat;
+
+          return Padding(
+            padding: const EdgeInsets.only(right: 4),
+            child: _HoverableHudChip(
+              label: cat,
+              isActive: isActive,
+              onTap: () => _selectCategory(cat),
+            ),
+          );
+        }).toList(),
+      ),
+    ),
+  ),
+),
                 const SizedBox(height: 32),
 
                 // Carousel & Overlapping Arrows Stack
@@ -190,26 +208,6 @@ class _SkillsScreenState extends State<SkillsScreen> {
       ),
     );
   }
-
-  Widget _pageHeader() => ScrollAnimate(
-        key: const ValueKey('skills_header'),
-        child: SizedBox(
-          width: double.infinity,
-          child: HudPanel(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('SYSTEMS DIAGNOSTICS // SKILLS MATRIX',
-                    style: HudTextStyles.mono(10)),
-                const SizedBox(height: 4),
-                GlowText('SKILLS & STACK',
-                    style: HudTextStyles.header(18), glowColor: HudColors.cyan),
-              ],
-            ),
-          ),
-        ),
-      );
 }
 
 // ── Hoverable Wrapper for Category Chips ────────────────────────────────
@@ -234,32 +232,48 @@ class _HoverableHudChipState extends State<_HoverableHudChip> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isActive = widget.isActive;
+    final background = isActive
+        ? HudColors.primary
+        : (_isHovered ? HudColors.hoverSurface : HudColors.inactiveChipSurface);
+    final border = isActive
+        ? HudColors.primary
+        : (_isHovered ? HudColors.hoverBorder : HudColors.inactiveChipBorder);
+    final textColor = isActive
+        ? (isDark ? HudColors.onPrimary : Colors.white)
+        : (isDark ? HudColors.textMain : const Color(0xFF3F474D));
+
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       cursor: SystemMouseCursors.click,
-      child: AnimatedScale(
-        scale: _isHovered ? 1.05 : 1.0,
-        duration: const Duration(milliseconds: 150),
-        curve: Curves.easeOutCubic,
+      child: GestureDetector(
+        onTap: widget.onTap,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(6),
-            color: _isHovered && !widget.isActive
-                ? HudColors.cyan.withOpacity(0.12)
-                : Colors.transparent,
-            border: Border.all(
-              color: _isHovered && !widget.isActive
-                  ? HudColors.cyan.withOpacity(0.5)
-                  : Colors.transparent,
-              width: 1,
-            ),
+            color: background,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: border),
+            boxShadow: isActive && !isDark
+                ? [
+                    BoxShadow(
+                      color: HudColors.primary.withOpacity(0.16),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
+                    ),
+                  ]
+                : null,
           ),
-          child: HudChip(
-            label: widget.label,
-            isActive: widget.isActive,
-            onTap: widget.onTap,
+          child: Text(
+            widget.label,
+            style: HudTextStyles.mono(9.5, color: textColor).copyWith(
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.3,
+            ),
           ),
         ),
       ),
@@ -311,8 +325,8 @@ class _HoverableCarouselArrowState extends State<_HoverableCarouselArrow> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: _isHovered
-                  ? HudColors.cyan.withOpacity(0.2)
-                  : HudColors.background.withOpacity(0.95),
+                  ? HudColors.hoverSurface
+                  : HudColors.elevatedSurface,
               border: Border.all(
                 color: _isHovered
                     ? HudColors.cyan
@@ -329,7 +343,7 @@ class _HoverableCarouselArrowState extends State<_HoverableCarouselArrow> {
                     ]
                   : [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.35),
+                        color: HudColors.primary.withOpacity(0.08),
                         blurRadius: 8,
                       ),
                     ],
@@ -400,18 +414,15 @@ class _SkillCardState extends State<_SkillCard>
             ? (Matrix4.identity()..translate(0, -5))
             : Matrix4.identity(),
         decoration: BoxDecoration(
-          color: _hovered ? const Color(0xFF070F28) : HudColors.panelBg,
+          color: _hovered ? HudColors.hoverSurface : HudColors.elevatedSurface,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: _hovered ? accentColor : HudColors.borderCyan,
+            color: _hovered ? HudColors.hoverBorder : HudColors.cardBorder,
             width: _hovered ? 1.5 : 1,
           ),
           boxShadow: _hovered
               ? [BoxShadow(color: accentColor.withOpacity(0.2), blurRadius: 18)]
-              : [
-                  BoxShadow(
-                      color: Colors.black.withOpacity(0.35), blurRadius: 8)
-                ],
+              : [BoxShadow(color: HudColors.shadowColor, blurRadius: 8)],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -469,7 +480,8 @@ class _SkillCardState extends State<_SkillCard>
                       child: LinearProgressIndicator(
                         value: _bar.value,
                         minHeight: 4,
-                        backgroundColor: Colors.white.withOpacity(0.05),
+                        backgroundColor:
+                            HudColors.elevatedSurface.withOpacity(0.5),
                         valueColor: AlwaysStoppedAnimation(skill.color),
                       ),
                     ),

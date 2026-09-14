@@ -25,11 +25,17 @@ class PortfolioApp extends StatelessWidget {
   const PortfolioApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Anik Shakya — Flutter Developer',
-      debugShowCheckedModeBanner: false,
-      theme: hudTheme(),
-      home: const PortfolioRoot(),
+    final themeController = HudThemeController.instance;
+    return AnimatedBuilder(
+      animation: themeController,
+      builder: (context, _) => MaterialApp(
+        title: 'Anik Shakya — Flutter Developer',
+        debugShowCheckedModeBanner: false,
+        theme: hudTheme(dark: false),
+        darkTheme: hudTheme(dark: true),
+        themeMode: themeController.mode,
+        home: const PortfolioRoot(),
+      ),
     );
   }
 }
@@ -74,14 +80,16 @@ class _PortfolioRootState extends State<PortfolioRoot> {
   @override
   Widget build(BuildContext context) {
     final isWide = MediaQuery.of(context).size.width > 700;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: HudColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       drawer: isWide
           ? null
           : _MobileDrawer(
               currentIndex: _currentIndex,
               sectionNames: _sectionNames,
               onTap: _scrollTo,
+              onThemeToggle: HudThemeController.instance.toggle,
             ),
       body: Stack(
         children: [
@@ -89,14 +97,18 @@ class _PortfolioRootState extends State<PortfolioRoot> {
           Positioned.fill(
             child: IgnorePointer(
               child: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Color(0x0A00F0FF),
+                      isDark
+                          ? const Color(0x0AD2BB6F)
+                          : const Color(0x18B59A50),
                       Colors.transparent,
-                      Color(0x0AFF007F)
+                      isDark
+                          ? const Color(0x0A9A526D)
+                          : const Color(0x129A526D),
                     ],
                   ),
                 ),
@@ -123,6 +135,7 @@ class _PortfolioRootState extends State<PortfolioRoot> {
                 isWide: isWide,
                 onMenuTap:
                     isWide ? null : () => Scaffold.of(context).openDrawer(),
+                onThemeToggle: HudThemeController.instance.toggle,
               ),
             ),
           ),
@@ -156,7 +169,7 @@ class _PortfolioRootState extends State<PortfolioRoot> {
         _page(const SkillsScreen(), topPad: topPad + 24, bottomPad: 0),
         _page(
           const ContactScreen(),
-          topPad: topPad + 24,
+          topPad: topPad + 56,
           bottomPad: 0,
           fullWidth: true,
           scrollable: false,
@@ -212,11 +225,13 @@ class _TopBar extends StatelessWidget {
   final List<String> sectionNames;
   final bool isWide;
   final VoidCallback? onMenuTap;
+  final VoidCallback onThemeToggle;
   const _TopBar(
       {required this.currentIndex,
       required this.sectionNames,
       required this.isWide,
-      required this.onMenuTap});
+      required this.onMenuTap,
+      required this.onThemeToggle});
 
   static const _resumeDownloadUrl =
       'https://drive.google.com/uc?export=download&id=1DVXMgBsQ2_-sZ87uilSv-n76lRJsrCFP';
@@ -255,6 +270,19 @@ class _TopBar extends StatelessWidget {
             ),
             const SizedBox(width: 8),
           ],
+          IconButton(
+            onPressed: onThemeToggle,
+            tooltip: 'Toggle theme',
+            icon: Icon(
+              Theme.of(context).brightness == Brightness.dark
+                  ? Icons.light_mode_rounded
+                  : Icons.dark_mode_rounded,
+              color: HudColors.amber,
+              size: 20,
+            ),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+          ),
           Expanded(
             child: Text(
               'ANIK SHAKYA // PORTFOLIO',
@@ -318,11 +346,13 @@ class _MobileDrawer extends StatelessWidget {
   final int currentIndex;
   final List<String> sectionNames;
   final ValueChanged<int> onTap;
+  final VoidCallback onThemeToggle;
 
   const _MobileDrawer({
     required this.currentIndex,
     required this.sectionNames,
     required this.onTap,
+    required this.onThemeToggle,
   });
 
   static const _icons = [
@@ -337,7 +367,9 @@ class _MobileDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       width: 286,
-      backgroundColor: HudColors.surface,
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? HudColors.surface
+          : HudColors.lightSurface,
       child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -390,6 +422,23 @@ class _MobileDrawer extends StatelessWidget {
                 ),
               );
             }),
+            const Spacer(),
+            const Divider(color: HudColors.borderCyan, height: 1),
+            ListTile(
+              leading: Icon(
+                Theme.of(context).brightness == Brightness.dark
+                    ? Icons.light_mode_rounded
+                    : Icons.dark_mode_rounded,
+                color: HudColors.amber,
+              ),
+              title: Text(
+                Theme.of(context).brightness == Brightness.dark
+                    ? 'LIGHT MODE'
+                    : 'DARK MODE',
+                style: HudTextStyles.mono(10),
+              ),
+              onTap: onThemeToggle,
+            ),
           ],
         ),
       ),

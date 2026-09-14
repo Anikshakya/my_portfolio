@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../theme/hud_theme.dart';
 import '../widgets/hud_panel.dart';
-import '../widgets/glow_text.dart';
 import '../widgets/scroll_animate.dart';
+import '../widgets/app_page_header.dart';
 import '../data/experience_data.dart';
 
 class ExperienceScreen extends StatefulWidget {
@@ -18,127 +18,87 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
   @override
   Widget build(BuildContext context) {
     final exp = experiences[_selectedIndex];
-    final isWide = MediaQuery.of(context).size.width > 900;
-    final hPad = isWide ? 40.0 : 16.0;
     final colorScheme = Theme.of(context).colorScheme;
-    final headerTitle = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('CAREER LOGS // ORBIT TIMELINE', style: HudTextStyles.mono(10)),
-        const SizedBox(height: 4),
-        GlowText('WORK EXPERIENCE',
-            style: HudTextStyles.header(18),
-            glowColor: colorScheme.secondary != Colors.transparent
-                ? colorScheme.secondary
-                : HudColors.cyan),
-      ],
-    );
 
-    return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(hPad, 40, hPad, 40),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1200),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ScrollAnimate(
-                key: const ValueKey('exp_header'),
-                child: HudPanel(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                  child: Flex(
-                    direction: isWide ? Axis.horizontal : Axis.vertical,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      if (isWide) Expanded(child: headerTitle) else headerTitle,
-                      if (!isWide) const SizedBox(height: 10),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: HudColors.green.withOpacity(0.08),
-                          border: Border.all(
-                              color: HudColors.green.withOpacity(0.3)),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 6,
-                              height: 6,
-                              decoration: const BoxDecoration(
-                                color: HudColors.green,
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: HudColors.green, blurRadius: 6)
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Text('ACTIVE',
-                                style: HudTextStyles.mono(10,
-                                    color: HudColors.green)),
-                          ],
-                        ),
-                      ),
-                    ],
+    final cyanColor = colorScheme.primary != Colors.transparent
+        ? colorScheme.primary
+        : HudColors.cyan;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth > 900;
+        final hPad = isWide ? 40.0 : 16.0;
+
+        return SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: hPad, vertical: 24.0),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1200),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AppPageHeader(
+                    eyebrow: 'CAREER ARCHIVE',
+                    title: 'WORK EXPERIENCE',
+                    summary:
+                        '// ${experiences.length} LOGS FROM PAST TO PRESENT',
+                    isWide: isWide,
+                    animationKey: 'exp_header',
                   ),
-                ),
+                  const SizedBox(height: 32),
+                  isWide
+                      ? _wideLayout(exp, colorScheme, cyanColor)
+                      : _narrowLayout(exp, colorScheme, cyanColor),
+                ],
               ),
-              const SizedBox(height: 20),
-              isWide
-                  ? _wideLayout(exp, colorScheme)
-                  : _narrowLayout(exp, colorScheme),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  // Wide layout using Row with aligned children height via Container/Expanded constraints
-  Widget _wideLayout(Experience exp, ColorScheme colorScheme) => Row(
+  Widget _wideLayout(
+          Experience exp, ColorScheme colorScheme, Color cyanColor) =>
+      Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
             width: 320,
             child: ScrollAnimate(
               key: const ValueKey('exp_timeline_list'),
-              child: _timelineList(colorScheme),
+              child: _timelineList(colorScheme, cyanColor),
             ),
           ),
-          const SizedBox(width: 20),
+          const SizedBox(width: 24),
           Expanded(
             child: ScrollAnimate(
               key: ValueKey('exp_detail_$_selectedIndex'),
-              child: _detailPanel(exp, colorScheme, isWide: true),
+              child: _detailPanel(exp, colorScheme, cyanColor, isWide: true),
             ),
           ),
         ],
       );
 
-  Widget _narrowLayout(Experience exp, ColorScheme colorScheme) => Column(
+  Widget _narrowLayout(
+          Experience exp, ColorScheme colorScheme, Color cyanColor) =>
+      Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           ScrollAnimate(
             key: const ValueKey('exp_timeline_list_mobile'),
-            child: _timelineList(colorScheme),
+            child: _timelineList(colorScheme, cyanColor),
           ),
           const SizedBox(height: 16),
           ScrollAnimate(
             key: ValueKey('exp_detail_mobile_$_selectedIndex'),
-            child: _detailPanel(exp, colorScheme, isWide: false),
+            child: _detailPanel(exp, colorScheme, cyanColor, isWide: false),
           ),
         ],
       );
 
-  Widget _timelineList(ColorScheme colorScheme) {
-    final cyanColor = colorScheme.primary != Colors.transparent
-        ? colorScheme.primary
-        : HudColors.cyan;
-
+  Widget _timelineList(ColorScheme colorScheme, Color cyanColor) {
     return HudPanel(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -148,16 +108,16 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('TIMELINE NODES', style: HudTextStyles.mono(10)),
+              Text('TIMELINE NODES',
+                  style: HudTextStyles.mono(10, color: HudColors.textMuted)
+                      .copyWith(letterSpacing: 1.2)),
               Text('[${experiences.length} LOGS]',
                   style: HudTextStyles.mono(9, color: cyanColor)),
             ],
           ),
           const SizedBox(height: 16),
-          // Wrapped nodes column inside a consistent non-expanded structural wrapper or tightly wrapped list
           Stack(
             children: [
-              // Cyberpunk Vertical Connecting Track Line spanning full height
               Positioned(
                 left: 17,
                 top: 8,
@@ -166,8 +126,6 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                   painter: _TimelineLinePainter(lineColor: cyanColor),
                 ),
               ),
-
-              // Interactive Nodes List
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: List.generate(experiences.length, (i) {
@@ -180,6 +138,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                       experience: e,
                       isSelected: isSelected,
                       colorScheme: colorScheme,
+                      cyanColor: cyanColor,
                       onTap: () => setState(() => _selectedIndex = i),
                     ),
                   );
@@ -193,7 +152,8 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
           Center(
             child: Text(
               'SELECT NODE TO VIEW TELEMETRY',
-              style: HudTextStyles.mono(9, color: HudColors.textMuted),
+              style: HudTextStyles.mono(9, color: HudColors.textMuted)
+                  .copyWith(letterSpacing: 1.0),
             ),
           ),
         ],
@@ -201,207 +161,68 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
     );
   }
 
-  Widget _detailPanel(Experience exp, ColorScheme colorScheme,
+  Widget _detailPanel(Experience exp, ColorScheme colorScheme, Color cyanColor,
       {required bool isWide}) {
-    final cyanColor = colorScheme.primary != Colors.transparent
-        ? colorScheme.primary
-        : HudColors.cyan;
-
     return HudPanel(
       borderColor: exp.isCurrent
           ? HudColors.green.withOpacity(0.4)
-          : HudColors.borderCyan,
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+          : cyanColor.withOpacity(0.3),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Flex(
-            direction: isWide ? Axis.horizontal : Axis.vertical,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: isWide
-                ? MainAxisAlignment.spaceBetween
-                : MainAxisAlignment.start,
-            children: [
-              if (isWide)
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 4,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          Text(
-                            exp.title,
-                            style: HudTextStyles.header(16,
-                                color: Colors.white, weight: FontWeight.w700),
-                          ),
-                          if (exp.isCurrent) ...[
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: HudColors.green.withOpacity(0.15),
-                                border: Border.all(color: HudColors.green),
-                                borderRadius: BorderRadius.circular(3),
-                              ),
-                              child: Text(
-                                'ACTIVE',
-                                style: HudTextStyles.mono(8,
-                                    color: HudColors.green),
-                              ),
-                            ),
-                          ]
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Wrap(
-                        spacing: 12,
-                        runSpacing: 4,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.business_rounded,
-                                  size: 14, color: cyanColor),
-                              const SizedBox(width: 6),
-                              Text(exp.company,
-                                  style:
-                                      HudTextStyles.body(13, color: cyanColor)),
-                            ],
-                          ),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.location_on_outlined,
-                                  size: 14, color: HudColors.textMuted),
-                              const SizedBox(width: 4),
-                              Text(exp.location,
-                                  style: HudTextStyles.body(12,
-                                      color: HudColors.textMuted)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+          isWide
+              ? Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                        child:
+                            _buildTitleAndCompany(exp, colorScheme, cyanColor)),
+                    const SizedBox(width: 12),
+                    _buildDateBadge(exp, colorScheme, cyanColor),
+                  ],
                 )
-              else
-                Column(
+              : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 4,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        Text(
-                          exp.title,
-                          style: HudTextStyles.header(16,
-                              color: Colors.white, weight: FontWeight.w700),
-                        ),
-                        if (exp.isCurrent) ...[
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: HudColors.green.withOpacity(0.15),
-                              border: Border.all(color: HudColors.green),
-                              borderRadius: BorderRadius.circular(3),
-                            ),
-                            child: Text(
-                              'ACTIVE',
-                              style:
-                                  HudTextStyles.mono(8, color: HudColors.green),
-                            ),
-                          ),
-                        ]
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 4,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.business_rounded,
-                                size: 14, color: cyanColor),
-                            const SizedBox(width: 6),
-                            Text(exp.company,
-                                style:
-                                    HudTextStyles.body(13, color: cyanColor)),
-                          ],
-                        ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.location_on_outlined,
-                                size: 14, color: HudColors.textMuted),
-                            const SizedBox(width: 4),
-                            Text(exp.location,
-                                style: HudTextStyles.body(12,
-                                    color: HudColors.textMuted)),
-                          ],
-                        ),
-                      ],
-                    ),
+                    _buildTitleAndCompany(exp, colorScheme, cyanColor),
+                    const SizedBox(height: 12),
+                    _buildDateBadge(exp, colorScheme, cyanColor),
                   ],
                 ),
-              Padding(
-                padding: EdgeInsets.only(top: isWide ? 0 : 10),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: cyanColor.withOpacity(0.08),
-                    border: Border.all(color: cyanColor.withOpacity(0.25)),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    '${exp.startDate} – ${exp.endDate}',
-                    style: HudTextStyles.mono(10),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 16),
           Divider(color: cyanColor.withOpacity(0.2)),
-          const SizedBox(height: 8),
-          Text(
-            exp.description,
-            style: HudTextStyles.body(13).copyWith(height: 1.4),
-          ),
           const SizedBox(height: 12),
           Text(
-            'KEY MILESTONES & ACHIEVEMENTS:',
-            style: HudTextStyles.mono(10, color: HudColors.textMuted),
+            exp.description,
+            style: HudTextStyles.body(13.5, color: HudColors.textMuted)
+                .copyWith(height: 1.6, letterSpacing: 0.2),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 20),
+          Text(
+            'KEY MILESTONES & ACHIEVEMENTS',
+            style: HudTextStyles.mono(10, color: HudColors.textMuted)
+                .copyWith(letterSpacing: 1.5),
+          ),
+          const SizedBox(height: 10),
           ...exp.achievements.map(
             (a) => Padding(
-              padding: const EdgeInsets.only(bottom: 5),
+              padding: const EdgeInsets.only(bottom: 8),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                     margin: const EdgeInsets.only(top: 6),
-                    width: 5,
-                    height: 5,
+                    width: 4,
+                    height: 4,
                     decoration: BoxDecoration(
                       color: cyanColor,
-                      borderRadius: BorderRadius.circular(1),
+                      shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: cyanColor.withOpacity(0.8),
-                          blurRadius: 4,
-                        ),
+                            color: cyanColor.withOpacity(0.8), blurRadius: 4),
                       ],
                     ),
                   ),
@@ -409,51 +230,53 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                   Expanded(
                     child: Text(
                       a,
-                      style: HudTextStyles.body(12.5).copyWith(height: 1.3),
+                      style:
+                          HudTextStyles.body(13, color: colorScheme.onSurface)
+                              .copyWith(height: 1.5, letterSpacing: 0.1),
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
           Divider(color: cyanColor.withOpacity(0.15)),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Wrap(
             spacing: 6,
             runSpacing: 6,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text('STACK:',
-                  style: HudTextStyles.mono(9.5, color: HudColors.textMuted)),
+                  style: HudTextStyles.mono(9.5, color: HudColors.textMuted)
+                      .copyWith(letterSpacing: 1.0)),
               ...exp.technologies.map(
-                (t) => _HoverableTechChip(label: t, colorScheme: colorScheme),
+                (t) => _HoverableTechChip(
+                    label: t, colorScheme: colorScheme, cyanColor: cyanColor),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          Flex(
-            direction: isWide ? Axis.horizontal : Axis.vertical,
-            mainAxisAlignment: isWide
-                ? MainAxisAlignment.spaceBetween
-                : MainAxisAlignment.center,
-            crossAxisAlignment:
-                isWide ? CrossAxisAlignment.center : CrossAxisAlignment.stretch,
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _NavButton(
-                label: '◄ NEXT',
+                label: '◄ NEXT LOG',
                 enabled: _selectedIndex > 0,
                 colorScheme: colorScheme,
+                cyanColor: cyanColor,
                 onTap: () => setState(() => _selectedIndex--),
               ),
               Text(
-                'LOG ${_selectedIndex + 1} OF ${experiences.length}',
-                style: HudTextStyles.mono(10, color: HudColors.textMuted),
+                'LOG ${_selectedIndex + 1} / ${experiences.length}',
+                style: HudTextStyles.mono(10, color: HudColors.textMuted)
+                    .copyWith(letterSpacing: 1.2),
               ),
               _NavButton(
-                label: 'PREVIOUS ►',
+                label: 'PREV LOG ►',
                 enabled: _selectedIndex < experiences.length - 1,
                 colorScheme: colorScheme,
+                cyanColor: cyanColor,
                 onTap: () => setState(() => _selectedIndex++),
               ),
             ],
@@ -462,138 +285,202 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
       ),
     );
   }
+
+  Widget _buildTitleAndCompany(
+      Experience exp, ColorScheme colorScheme, Color cyanColor) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          spacing: 10,
+          runSpacing: 6,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Text(
+              exp.title,
+              style: HudTextStyles.header(20,
+                      color: colorScheme.onSurface, weight: FontWeight.w600)
+                  .copyWith(letterSpacing: 0.5),
+            ),
+            if (exp.isCurrent)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: HudColors.green.withOpacity(0.12),
+                  border: Border.all(color: HudColors.green.withOpacity(0.6)),
+                  borderRadius: BorderRadius.circular(3),
+                ),
+                child: Text(
+                  'ACTIVE',
+                  style: HudTextStyles.mono(8, color: HudColors.green)
+                      .copyWith(letterSpacing: 1.0),
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 16,
+          runSpacing: 4,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.business_rounded, size: 14, color: cyanColor),
+                const SizedBox(width: 6),
+                Text(exp.company,
+                    style: HudTextStyles.body(13, color: cyanColor)
+                        .copyWith(fontWeight: FontWeight.w500)),
+              ],
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.location_on_outlined,
+                    size: 14, color: HudColors.textMuted),
+                const SizedBox(width: 4),
+                Text(exp.location,
+                    style: HudTextStyles.body(12, color: HudColors.textMuted)),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDateBadge(
+      Experience exp, ColorScheme colorScheme, Color cyanColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: cyanColor.withOpacity(0.06),
+        border: Border.all(color: cyanColor.withOpacity(0.2)),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        '${exp.startDate} – ${exp.endDate}',
+        style: HudTextStyles.mono(10, color: colorScheme.onSurface)
+            .copyWith(letterSpacing: 0.8),
+      ),
+    );
+  }
 }
 
 // ── Timeline Node Widget ─────────────────────────────────────────
 
-class _TimelineNodeTile extends StatefulWidget {
+class _TimelineNodeTile extends StatelessWidget {
   final Experience experience;
   final bool isSelected;
   final ColorScheme colorScheme;
+  final Color cyanColor;
   final VoidCallback onTap;
 
-  const _TimelineNodeTile({
+  _TimelineNodeTile({
     required this.experience,
     required this.isSelected,
     required this.colorScheme,
+    required this.cyanColor,
     required this.onTap,
   });
 
-  @override
-  State<_TimelineNodeTile> createState() => _TimelineNodeTileState();
-}
-
-class _TimelineNodeTileState extends State<_TimelineNodeTile> {
-  bool _isHovered = false;
+  final ValueNotifier<bool> _isHovered = ValueNotifier<bool>(false);
 
   @override
   Widget build(BuildContext context) {
-    final isSel = widget.isSelected;
-    final exp = widget.experience;
-    final cyanColor = widget.colorScheme.primary != Colors.transparent
-        ? widget.colorScheme.primary
-        : HudColors.cyan;
-
     return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
+      onEnter: (_) => _isHovered.value = true,
+      onExit: (_) => _isHovered.value = false,
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
-          decoration: BoxDecoration(
-            color: isSel
-                ? cyanColor.withOpacity(0.14)
-                : (_isHovered
-                    ? cyanColor.withOpacity(0.06)
-                    : Colors.transparent),
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(
-              color: isSel
-                  ? cyanColor
-                  : (_isHovered
-                      ? cyanColor.withOpacity(0.4)
-                      : Colors.transparent),
-            ),
-            boxShadow: isSel
-                ? [
-                    BoxShadow(
-                      color: cyanColor.withOpacity(0.2),
-                      blurRadius: 10,
-                    )
-                  ]
-                : [],
-          ),
-          child: Row(
-            children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                width: isSel ? 16 : (_isHovered ? 14 : 12),
-                height: isSel ? 16 : (_isHovered ? 14 : 12),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: exp.isCurrent
-                      ? HudColors.green
-                      : (isSel
-                          ? cyanColor
-                          : (_isHovered
-                              ? cyanColor.withOpacity(0.6)
-                              : const Color(0xFF060E22))),
-                  border: Border.all(
-                    color: exp.isCurrent
-                        ? Colors.white
-                        : (isSel ? cyanColor : cyanColor.withOpacity(0.5)),
-                    width: 2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: exp.isCurrent
+        onTap: onTap,
+        child: ValueListenableBuilder<bool>(
+          valueListenable: _isHovered,
+          builder: (context, hovered, child) {
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? cyanColor.withOpacity(0.12)
+                    : (hovered
+                        ? cyanColor.withOpacity(0.04)
+                        : Colors.transparent),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: isSelected
+                      ? cyanColor
+                      : (hovered
+                          ? cyanColor.withOpacity(0.3)
+                          : Colors.transparent),
+                ),
+              ),
+              child: Row(
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    width: isSelected ? 14 : (hovered ? 12 : 10),
+                    height: isSelected ? 14 : (hovered ? 12 : 10),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: experience.isCurrent
                           ? HudColors.green
-                          : (isSel || _isHovered
+                          : (isSelected
                               ? cyanColor
-                              : Colors.transparent),
-                      blurRadius: isSel ? 10 : 4,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      exp.title,
-                      style: HudTextStyles.body(
-                        12,
-                        color: isSel
+                              : (hovered
+                                  ? cyanColor.withOpacity(0.6)
+                                  : colorScheme.surfaceContainerHighest)),
+                      border: Border.all(
+                        color: experience.isCurrent
                             ? Colors.white
-                            : (_isHovered ? cyanColor : HudColors.textMain),
-                      ).copyWith(
-                        fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
+                            : (isSelected
+                                ? cyanColor
+                                : cyanColor.withOpacity(0.4)),
+                        width: 1.5,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${exp.company} · ${exp.startDate}',
-                      style: HudTextStyles.mono(
-                        9,
-                        color: isSel ? cyanColor : HudColors.textMuted,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          experience.title,
+                          style: HudTextStyles.body(
+                            12,
+                            color: isSelected
+                                ? colorScheme.onSurface
+                                : (hovered ? cyanColor : colorScheme.onSurface),
+                          ).copyWith(
+                            fontWeight:
+                                isSelected ? FontWeight.w600 : FontWeight.w400,
+                            letterSpacing: 0.2,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${experience.company} · ${experience.startDate}',
+                          style: HudTextStyles.mono(
+                            9,
+                            color: isSelected ? cyanColor : HudColors.textMuted,
+                          ).copyWith(letterSpacing: 0.5),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  if (isSelected)
+                    Icon(Icons.chevron_right_rounded,
+                        color: cyanColor, size: 16),
+                ],
               ),
-              if (isSel)
-                Icon(Icons.chevron_right_rounded, color: cyanColor, size: 16),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
@@ -602,118 +489,118 @@ class _TimelineNodeTileState extends State<_TimelineNodeTile> {
 
 // ── Hoverable Tech Chip ──────────────────────────────────────────
 
-class _HoverableTechChip extends StatefulWidget {
+class _HoverableTechChip extends StatelessWidget {
   final String label;
   final ColorScheme colorScheme;
+  final Color cyanColor;
 
-  const _HoverableTechChip({
+  _HoverableTechChip({
     required this.label,
     required this.colorScheme,
+    required this.cyanColor,
   });
 
-  @override
-  State<_HoverableTechChip> createState() => _HoverableTechChipState();
-}
-
-class _HoverableTechChipState extends State<_HoverableTechChip> {
-  bool _isHovered = false;
+  final ValueNotifier<bool> _isHovered = ValueNotifier<bool>(false);
 
   @override
   Widget build(BuildContext context) {
-    final cyanColor = widget.colorScheme.primary != Colors.transparent
-        ? widget.colorScheme.primary
-        : HudColors.cyan;
+    const goldColor = Color(0xFFF5C542);
 
-    return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-        decoration: BoxDecoration(
-          color: _isHovered
-              ? cyanColor.withOpacity(0.15)
-              : const Color(0xCC020614),
-          border: Border.all(
-            color: _isHovered ? cyanColor : cyanColor.withOpacity(0.25),
+    return ValueListenableBuilder<bool>(
+      valueListenable: _isHovered,
+      builder: (context, hovered, child) {
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
+          transform: Matrix4.identity()..translate(0.0, hovered ? -1.5 : 0.0),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4.5),
+          decoration: BoxDecoration(
+            color: hovered ? goldColor : colorScheme.surface.withOpacity(0.4),
+            border: Border.all(
+              color: hovered ? goldColor : cyanColor.withOpacity(0.25),
+              width: 1.2,
+            ),
+            borderRadius: BorderRadius.circular(4),
+            boxShadow: hovered
+                ? [
+                    BoxShadow(
+                      color: goldColor.withOpacity(0.35),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : [],
           ),
-          borderRadius: BorderRadius.circular(3),
-        ),
-        child: Text(
-          widget.label,
-          style: HudTextStyles.mono(
-            10,
-            color: _isHovered ? cyanColor : HudColors.textMain,
+          child: Text(
+            label,
+            style: HudTextStyles.mono(
+              10,
+              color: hovered ? Colors.white : colorScheme.onSurface,
+            ).copyWith(
+              fontWeight: hovered ? FontWeight.w600 : FontWeight.w400,
+              letterSpacing: 0.9,
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
 
-// ── Nav Button ──────────────────────────────────────────────────
+// ── Navigation Button ────────────────────────────────────────────
 
-class _NavButton extends StatefulWidget {
+class _NavButton extends StatelessWidget {
   final String label;
   final bool enabled;
   final ColorScheme colorScheme;
+  final Color cyanColor;
   final VoidCallback onTap;
 
-  const _NavButton({
+  _NavButton({
     required this.label,
     required this.enabled,
     required this.colorScheme,
+    required this.cyanColor,
     required this.onTap,
   });
 
-  @override
-  State<_NavButton> createState() => _NavButtonState();
-}
-
-class _NavButtonState extends State<_NavButton> {
-  bool _isHovered = false;
+  final ValueNotifier<bool> _isHovered = ValueNotifier<bool>(false);
 
   @override
   Widget build(BuildContext context) {
-    final cyanColor = widget.colorScheme.primary != Colors.transparent
-        ? widget.colorScheme.primary
-        : HudColors.cyan;
-
     return MouseRegion(
-      onEnter: (_) => widget.enabled ? setState(() => _isHovered = true) : null,
-      onExit: (_) => setState(() => _isHovered = false),
-      cursor:
-          widget.enabled ? SystemMouseCursors.click : SystemMouseCursors.basic,
+      onEnter: (_) => enabled ? _isHovered.value = true : null,
+      onExit: (_) => _isHovered.value = false,
+      cursor: enabled ? SystemMouseCursors.click : SystemMouseCursors.basic,
       child: GestureDetector(
-        onTap: widget.enabled ? widget.onTap : null,
+        onTap: enabled ? onTap : null,
         child: Opacity(
-          opacity: widget.enabled ? 1.0 : 0.3,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color:
-                  _isHovered ? cyanColor.withOpacity(0.15) : Colors.transparent,
-              border: Border.all(
-                color: _isHovered ? cyanColor : cyanColor.withOpacity(0.4),
-              ),
-              borderRadius: BorderRadius.circular(4),
-              boxShadow: _isHovered
-                  ? [
-                      BoxShadow(
-                        color: cyanColor.withOpacity(0.2),
-                        blurRadius: 8,
-                      ),
-                    ]
-                  : [],
-            ),
-            child: Text(
-              widget.label,
-              style: HudTextStyles.mono(
-                9.5,
-                color: _isHovered ? cyanColor : HudColors.textMain,
-              ),
-            ),
+          opacity: enabled ? 1.0 : 0.3,
+          child: ValueListenableBuilder<bool>(
+            valueListenable: _isHovered,
+            builder: (context, hovered, child) {
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: hovered
+                      ? cyanColor.withOpacity(0.12)
+                      : Colors.transparent,
+                  border: Border.all(
+                    color: hovered ? cyanColor : cyanColor.withOpacity(0.3),
+                  ),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  label,
+                  style: HudTextStyles.mono(
+                    9.5,
+                    color: hovered ? cyanColor : colorScheme.onSurface,
+                  ).copyWith(letterSpacing: 1.0),
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -731,8 +618,8 @@ class _TimelineLinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = lineColor.withOpacity(0.2)
-      ..strokeWidth = 1.5
+      ..color = lineColor.withOpacity(0.15)
+      ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
 
     canvas.drawLine(Offset.zero, Offset(0, size.height), paint);

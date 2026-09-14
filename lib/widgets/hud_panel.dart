@@ -22,7 +22,13 @@ class HudPanel extends StatelessWidget {
     return Container(
       height: height,
       padding: padding ?? const EdgeInsets.all(16),
-      decoration: hudPanelDecoration(borderColor: borderColor, glowOpacity: glowOpacity),
+      decoration: hudPanelDecoration(
+        borderColor: Theme.of(context).brightness == Brightness.light
+            ? HudColors.cardBorder
+            : borderColor,
+        glowOpacity: glowOpacity,
+        isDark: Theme.of(context).brightness == Brightness.dark,
+      ),
       child: child,
     );
   }

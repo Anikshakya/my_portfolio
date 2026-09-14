@@ -5,7 +5,8 @@ class HudNavRail extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  const HudNavRail({super.key, required this.currentIndex, required this.onTap});
+  const HudNavRail(
+      {super.key, required this.currentIndex, required this.onTap});
 
   static const _items = [
     (Icons.person_outline_rounded, 'ABOUT'),
@@ -19,7 +20,7 @@ class HudNavRail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 64,
-      color: const Color(0xFF040A1A).withOpacity(0.95),
+      color: HudColors.surface.withOpacity(0.95),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(_items.length, (i) {
@@ -32,7 +33,9 @@ class HudNavRail extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(6),
-                color: isActive ? HudColors.cyan.withOpacity(0.12) : Colors.transparent,
+                color: isActive
+                    ? HudColors.cyan.withOpacity(0.12)
+                    : Colors.transparent,
                 border: Border.all(
                   color: isActive ? HudColors.cyan : Colors.transparent,
                   width: 1,
@@ -40,14 +43,16 @@ class HudNavRail extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  Icon(_items[i].$1,
+                  Icon(
+                    _items[i].$1,
                     color: isActive ? HudColors.cyan : HudColors.textMuted,
                     size: 20,
                   ),
                   const SizedBox(height: 4),
                   Text(
                     _items[i].$2,
-                    style: HudTextStyles.mono(6, color: isActive ? HudColors.cyan : HudColors.textMuted),
+                    style: HudTextStyles.mono(6,
+                        color: isActive ? HudColors.cyan : HudColors.textMuted),
                   ),
                 ],
               ),

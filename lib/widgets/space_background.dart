@@ -1,10 +1,5 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-
-class StarData {
-  double x, y, r, opacity, speed;
-  StarData(this.x, this.y, this.r, this.opacity, this.speed);
-}
+import '../theme/hud_theme.dart';
 
 class SpaceBackground extends StatefulWidget {
   const SpaceBackground({super.key});
@@ -13,28 +8,17 @@ class SpaceBackground extends StatefulWidget {
   State<SpaceBackground> createState() => _SpaceBackgroundState();
 }
 
-class _SpaceBackgroundState extends State<SpaceBackground> with SingleTickerProviderStateMixin {
+class _SpaceBackgroundState extends State<SpaceBackground>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late List<StarData> _stars;
-  final _rand = Random();
 
   @override
   void initState() {
     super.initState();
-    _stars = List.generate(180, (_) => StarData(
-      _rand.nextDouble(),
-      _rand.nextDouble(),
-      _rand.nextDouble() * 1.8 + 0.3,
-      _rand.nextDouble() * 0.7 + 0.3,
-      _rand.nextDouble() * 0.3 + 0.1,
-    ));
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 6))
-      ..repeat();
-    _controller.addListener(() => setState(() {
-      for (final star in _stars) {
-        star.opacity = 0.3 + 0.7 * (0.5 + 0.5 * sin(_controller.value * 2 * pi * star.speed + star.x * 10));
-      }
-    }));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 8),
+    )..repeat(reverse: true);
   }
 
   @override
@@ -45,26 +29,49 @@ class _SpaceBackgroundState extends State<SpaceBackground> with SingleTickerProv
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _StarPainter(_stars),
-      child: const SizedBox.expand(),
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) => CustomPaint(
+        painter: _PremiumBackgroundPainter(
+          Theme.of(context).brightness == Brightness.dark,
+          _controller.value,
+        ),
+        child: const SizedBox.expand(),
+      ),
     );
   }
 }
 
-class _StarPainter extends CustomPainter {
-  final List<StarData> stars;
-  _StarPainter(this.stars);
+class _PremiumBackgroundPainter extends CustomPainter {
+  final bool isDark;
+  final double phase;
+  _PremiumBackgroundPainter(this.isDark, this.phase);
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFF020208));
-    for (final star in stars) {
-      final paint = Paint()..color = Colors.white.withOpacity(star.opacity * 0.85);
-      canvas.drawCircle(Offset(star.x * size.width, star.y * size.height), star.r, paint);
+    final base = isDark ? HudColors.background : HudColors.lightBackground;
+    final glow = isDark ? const Color(0xFF3B3324) : const Color(0xFFE8DCC0);
+    canvas.drawRect(Offset.zero & size, Paint()..color = base);
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [glow.withOpacity(0.2 + phase * 0.08), Colors.transparent],
+        ).createShader(Offset.zero & size),
+    );
+    final linePaint = Paint()
+      ..color = HudColors.primary.withOpacity(isDark ? 0.035 : 0.06)
+      ..strokeWidth = 1;
+    for (var index = 1; index < 12; index++) {
+      final x = size.width * index / 12;
+      canvas.drawLine(
+          Offset(x, 0), Offset(x - size.height * 0.3, size.height), linePaint);
     }
   }
 
   @override
-  bool shouldRepaint(_StarPainter old) => true;
+  bool shouldRepaint(_PremiumBackgroundPainter old) =>
+      old.isDark != isDark || old.phase != phase;
 }

@@ -6,7 +6,11 @@ class HudChip extends StatelessWidget {
   final bool isActive;
   final VoidCallback onTap;
 
-  const HudChip({super.key, required this.label, required this.isActive, required this.onTap});
+  const HudChip(
+      {super.key,
+      required this.label,
+      required this.isActive,
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -16,16 +20,23 @@ class HudChip extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: isActive ? HudColors.cyan : const Color(0x1100F0FF),
+          color: isActive ? HudColors.primary : HudColors.chipSurface,
           borderRadius: BorderRadius.circular(5),
           border: Border.all(
-            color: isActive ? HudColors.cyan : const Color(0x4400F0FF),
+            color: isActive ? HudColors.primary : HudColors.chipBorder,
           ),
-          boxShadow: isActive ? [BoxShadow(color: HudColors.cyan.withOpacity(0.35), blurRadius: 8)] : [],
+          boxShadow: isActive
+              ? [
+                  BoxShadow(
+                      color: HudColors.primary.withOpacity(0.3), blurRadius: 8)
+                ]
+              : [],
         ),
         child: Text(
           label,
-          style: HudTextStyles.mono(10, color: isActive ? const Color(0xFF020208) : HudColors.cyan).copyWith(
+          style: HudTextStyles.mono(10,
+                  color: isActive ? HudColors.onPrimary : HudColors.primary)
+              .copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
