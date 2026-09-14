@@ -147,7 +147,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          Divider(color: cyanColor.withOpacity(0.2), height: 1),
+          Divider(color: cyanColor.withValues(alpha:0.2), height: 1),
           const SizedBox(height: 10),
           Center(
             child: Text(
@@ -165,8 +165,8 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
       {required bool isWide}) {
     return HudPanel(
       borderColor: exp.isCurrent
-          ? HudColors.green.withOpacity(0.4)
-          : cyanColor.withOpacity(0.3),
+          ? HudColors.green.withValues(alpha:0.4)
+          : cyanColor.withValues(alpha:0.3),
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,7 +193,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                   ],
                 ),
           const SizedBox(height: 16),
-          Divider(color: cyanColor.withOpacity(0.2)),
+          Divider(color: cyanColor.withValues(alpha:0.2)),
           const SizedBox(height: 12),
           Text(
             exp.description,
@@ -222,7 +222,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                            color: cyanColor.withOpacity(0.8), blurRadius: 4),
+                            color: cyanColor.withValues(alpha:0.8), blurRadius: 4),
                       ],
                     ),
                   ),
@@ -240,7 +240,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          Divider(color: cyanColor.withOpacity(0.15)),
+          Divider(color: cyanColor.withValues(alpha:0.15)),
           const SizedBox(height: 12),
           Wrap(
             spacing: 6,
@@ -306,8 +306,8 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: HudColors.green.withOpacity(0.12),
-                  border: Border.all(color: HudColors.green.withOpacity(0.6)),
+                  color: HudColors.green.withValues(alpha:0.12),
+                  border: Border.all(color: HudColors.green.withValues(alpha:0.6)),
                   borderRadius: BorderRadius.circular(3),
                 ),
                 child: Text(
@@ -355,8 +355,8 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: cyanColor.withOpacity(0.06),
-        border: Border.all(color: cyanColor.withOpacity(0.2)),
+        color: cyanColor.withValues(alpha:0.06),
+        border: Border.all(color: cyanColor.withValues(alpha:0.2)),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
@@ -403,16 +403,16 @@ class _TimelineNodeTile extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? cyanColor.withOpacity(0.12)
+                    ? cyanColor.withValues(alpha:0.12)
                     : (hovered
-                        ? cyanColor.withOpacity(0.04)
+                        ? cyanColor.withValues(alpha:0.04)
                         : Colors.transparent),
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
                   color: isSelected
                       ? cyanColor
                       : (hovered
-                          ? cyanColor.withOpacity(0.3)
+                          ? cyanColor.withValues(alpha:0.3)
                           : Colors.transparent),
                 ),
               ),
@@ -429,14 +429,14 @@ class _TimelineNodeTile extends StatelessWidget {
                           : (isSelected
                               ? cyanColor
                               : (hovered
-                                  ? cyanColor.withOpacity(0.6)
+                                  ? cyanColor.withValues(alpha:0.6)
                                   : colorScheme.surfaceContainerHighest)),
                       border: Border.all(
                         color: experience.isCurrent
                             ? Colors.white
                             : (isSelected
                                 ? cyanColor
-                                : cyanColor.withOpacity(0.4)),
+                                : cyanColor.withValues(alpha:0.4)),
                         width: 1.5,
                       ),
                     ),
@@ -515,16 +515,16 @@ class _HoverableTechChip extends StatelessWidget {
           transform: Matrix4.identity()..translate(0.0, hovered ? -1.5 : 0.0),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4.5),
           decoration: BoxDecoration(
-            color: hovered ? goldColor : colorScheme.surface.withOpacity(0.4),
+            color: hovered ? goldColor : colorScheme.surface.withValues(alpha:0.4),
             border: Border.all(
-              color: hovered ? goldColor : cyanColor.withOpacity(0.25),
+              color: hovered ? goldColor : cyanColor.withValues(alpha:0.25),
               width: 1.2,
             ),
             borderRadius: BorderRadius.circular(4),
             boxShadow: hovered
                 ? [
                     BoxShadow(
-                      color: goldColor.withOpacity(0.35),
+                      color: goldColor.withValues(alpha:0.35),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -585,10 +585,10 @@ class _NavButton extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: hovered
-                      ? cyanColor.withOpacity(0.12)
+                      ? cyanColor.withValues(alpha:0.12)
                       : Colors.transparent,
                   border: Border.all(
-                    color: hovered ? cyanColor : cyanColor.withOpacity(0.3),
+                    color: hovered ? cyanColor : cyanColor.withValues(alpha:0.3),
                   ),
                   borderRadius: BorderRadius.circular(4),
                 ),
@@ -618,7 +618,7 @@ class _TimelineLinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = lineColor.withOpacity(0.15)
+      ..color = lineColor.withValues(alpha:0.15)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
 

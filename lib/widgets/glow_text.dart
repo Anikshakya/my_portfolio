@@ -20,8 +20,8 @@ class GlowText extends StatelessWidget {
       text,
       style: style.copyWith(
         shadows: [
-          Shadow(color: glowColor.withOpacity(0.9), blurRadius: blurRadius),
-          Shadow(color: glowColor.withOpacity(0.4), blurRadius: blurRadius * 2),
+          Shadow(color: glowColor.withValues(alpha:0.9), blurRadius: blurRadius),
+          Shadow(color: glowColor.withValues(alpha:0.4), blurRadius: blurRadius * 2),
         ],
       ),
     );

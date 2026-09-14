@@ -196,8 +196,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                                 horizontal: 12,
                                 vertical: 16,
                               ),
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: isWide ? 3 : 1,
                                 mainAxisSpacing: 16,
                                 crossAxisSpacing: 16,
@@ -515,7 +514,7 @@ class _HoverableTabState extends State<_HoverableTab> {
             boxShadow: widget.active && !isDark
                 ? [
                     BoxShadow(
-                      color: HudColors.cyan.withOpacity(0.16),
+                      color: HudColors.cyan.withValues(alpha:0.16),
                       blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),
@@ -568,7 +567,7 @@ class _HoverableCarouselArrowState extends State<_HoverableCarouselArrow> {
     final Color background = HudColors.elevatedSurface;
 
     final Color border = _isHovered
-        ? HudColors.cyan.withOpacity(
+        ? HudColors.cyan.withValues(alpha:
             isDark ? 0.75 : 0.45,
           )
         : HudColors.cardBorder;
@@ -614,7 +613,7 @@ class _HoverableCarouselArrowState extends State<_HoverableCarouselArrow> {
                   ? [
                       BoxShadow(
                         color: isDark
-                            ? HudColors.primary.withOpacity(0.18)
+                            ? HudColors.primary.withValues(alpha:0.18)
                             : HudColors.shadowColor,
                         blurRadius: isDark ? 18 : 14,
                         spreadRadius: isDark ? 1 : 0,
@@ -677,8 +676,8 @@ class _PageIndicator extends StatelessWidget {
               color: active
                   ? HudColors.cyan
                   : isDark
-                      ? Colors.white.withOpacity(0.16)
-                      : Colors.black.withOpacity(0.12),
+                      ? Colors.white.withValues(alpha:0.16)
+                      : Colors.black.withValues(alpha:0.12),
               borderRadius: BorderRadius.circular(5),
             ),
           );
@@ -745,12 +744,12 @@ class _ProjectCardState extends State<_ProjectCard> {
         isDark ? HudColors.textMuted : const Color(0xFF69757D);
 
     final Color iconBackground = isDark
-        ? HudColors.cyan.withOpacity(0.07)
-        : HudColors.cyan.withOpacity(0.055);
+        ? HudColors.cyan.withValues(alpha:0.07)
+        : HudColors.cyan.withValues(alpha:0.055);
 
     final Color iconBorder = isDark
-        ? HudColors.cyan.withOpacity(0.18)
-        : HudColors.cyan.withOpacity(0.14);
+        ? HudColors.cyan.withValues(alpha:0.18)
+        : HudColors.cyan.withValues(alpha:0.14);
 
     return MouseRegion(
       onEnter: (_) {
@@ -786,7 +785,7 @@ class _ProjectCardState extends State<_ProjectCard> {
               boxShadow: _hovered
                   ? [
                       BoxShadow(
-                        color: HudColors.primary.withOpacity(0.2),
+                        color: HudColors.primary.withValues(alpha:0.2),
                         blurRadius: 18,
                       ),
                     ]
@@ -905,7 +904,7 @@ class _ProjectCardState extends State<_ProjectCard> {
                   ),
                 ),
 
-                const SizedBox(height: 10),
+                // const SizedBox(height: 10),
 
                 // ─────────────────────────────────────────────────────────
                 // KEY HIGHLIGHTS
@@ -1008,7 +1007,7 @@ class _ProjectCardState extends State<_ProjectCard> {
                       9,
                       color: _hovered
                           ? HudColors.cyan
-                          : HudColors.cyan.withOpacity(
+                          : HudColors.cyan.withValues(alpha:
                               isDark ? 0.45 : 0.55,
                             ),
                     ),
@@ -1069,12 +1068,12 @@ class _ProjectStatusBadge extends StatelessWidget {
         vertical: 3.5,
       ),
       decoration: BoxDecoration(
-        color: color.withOpacity(
+        color: color.withValues(alpha:
           isDark ? 0.08 : 0.065,
         ),
         borderRadius: BorderRadius.circular(6),
         border: Border.all(
-          color: color.withOpacity(
+          color: color.withValues(alpha:
             isDark ? 0.24 : 0.20,
           ),
         ),
@@ -1123,14 +1122,14 @@ class _ProjectTechChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color background =
-        isDark ? Colors.white.withOpacity(0.035) : const Color(0xFFEEF2F4);
+        isDark ? Colors.white.withValues(alpha:0.035) : const Color(0xFFEEF2F4);
 
     final Color border = isDark
-        ? Colors.white.withOpacity(0.08)
-        : Colors.black.withOpacity(0.055);
+        ? Colors.white.withValues(alpha:0.08)
+        : Colors.black.withValues(alpha:0.055);
 
     final Color text =
-        isDark ? HudColors.textMain.withOpacity(0.72) : const Color(0xFF59656D);
+        isDark ? HudColors.textMain.withValues(alpha:0.72) : const Color(0xFF59656D);
 
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -1188,7 +1187,7 @@ class _ProjectDetailDialog extends StatelessWidget {
         isDark ? const Color(0xE914171B) : const Color(0xF5F8FAFB);
 
     final Color headerBackground =
-        isDark ? Colors.white.withOpacity(0.035) : accent.withOpacity(0.025);
+        isDark ? Colors.white.withValues(alpha:0.035) : accent.withValues(alpha:0.025);
 
     final Color primaryText =
         isDark ? const Color(0xFFF3F5F7) : const Color(0xFF151A1E);
@@ -1197,39 +1196,39 @@ class _ProjectDetailDialog extends StatelessWidget {
         isDark ? const Color(0xFF8C969F) : const Color(0xFF667078);
 
     final Color borderColor = isDark
-        ? Colors.white.withOpacity(0.13)
-        : Colors.black.withOpacity(0.075);
+        ? Colors.white.withValues(alpha:0.13)
+        : Colors.black.withValues(alpha:0.075);
 
     final Color dividerColor = isDark
-        ? Colors.white.withOpacity(0.08)
-        : Colors.black.withOpacity(0.065);
+        ? Colors.white.withValues(alpha:0.08)
+        : Colors.black.withValues(alpha:0.065);
 
     final Color innerSurface = isDark
-        ? Colors.white.withOpacity(0.025)
-        : Colors.black.withOpacity(0.018);
+        ? Colors.white.withValues(alpha:0.025)
+        : Colors.black.withValues(alpha:0.018);
 
     final List<BoxShadow> shadows = isDark
         ? [
             BoxShadow(
-              color: Colors.black.withOpacity(0.42),
+              color: Colors.black.withValues(alpha:0.42),
               blurRadius: 42,
               spreadRadius: 2,
               offset: const Offset(0, 18),
             ),
             BoxShadow(
-              color: accent.withOpacity(0.08),
+              color: accent.withValues(alpha:0.08),
               blurRadius: 35,
               spreadRadius: -10,
             ),
           ]
         : [
             BoxShadow(
-              color: Colors.black.withOpacity(0.13),
+              color: Colors.black.withValues(alpha:0.13),
               blurRadius: 38,
               offset: const Offset(0, 16),
             ),
             BoxShadow(
-              color: Colors.black.withOpacity(0.045),
+              color: Colors.black.withValues(alpha:0.045),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -1287,12 +1286,12 @@ class _ProjectDetailDialog extends StatelessWidget {
                           width: 36,
                           height: 36,
                           decoration: BoxDecoration(
-                            color: accent.withOpacity(
+                            color: accent.withValues(alpha:
                               isDark ? 0.09 : 0.055,
                             ),
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: accent.withOpacity(
+                              color: accent.withValues(alpha:
                                 isDark ? 0.18 : 0.14,
                               ),
                             ),
@@ -1338,8 +1337,8 @@ class _ProjectDetailDialog extends StatelessWidget {
                             height: 36,
                             decoration: BoxDecoration(
                               color: isDark
-                                  ? Colors.white.withOpacity(0.045)
-                                  : Colors.black.withOpacity(
+                                  ? Colors.white.withValues(alpha:0.045)
+                                  : Colors.black.withValues(alpha:
                                       0.035,
                                     ),
                               borderRadius: BorderRadius.circular(10),
@@ -1427,10 +1426,10 @@ class _ProjectDetailDialog extends StatelessWidget {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  accent.withOpacity(
+                                  accent.withValues(alpha:
                                     isDark ? 0.45 : 0.30,
                                   ),
-                                  accent.withOpacity(
+                                  accent.withValues(alpha:
                                     isDark ? 0.10 : 0.06,
                                   ),
                                   Colors.transparent,
@@ -1670,12 +1669,12 @@ class _StatusBadge extends StatelessWidget {
         vertical: 7,
       ),
       decoration: BoxDecoration(
-        color: color.withOpacity(
+        color: color.withValues(alpha:
           isDark ? 0.09 : 0.065,
         ),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: color.withOpacity(
+          color: color.withValues(alpha:
             isDark ? 0.28 : 0.22,
           ),
         ),
@@ -1728,14 +1727,14 @@ class _TechChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color background =
-        isDark ? Colors.white.withOpacity(0.045) : const Color(0xFFEEF2F4);
+        isDark ? Colors.white.withValues(alpha:0.045) : const Color(0xFFEEF2F4);
 
     final Color border = isDark
-        ? Colors.white.withOpacity(0.10)
-        : Colors.black.withOpacity(0.075);
+        ? Colors.white.withValues(alpha:0.10)
+        : Colors.black.withValues(alpha:0.075);
 
     final Color text =
-        isDark ? textColor.withOpacity(0.82) : const Color(0xFF3F474D);
+        isDark ? textColor.withValues(alpha:0.82) : const Color(0xFF3F474D);
 
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -1795,24 +1794,24 @@ class _StoreActionButtonState extends State<_StoreActionButton> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final Color background = _isHovered
-        ? widget.color.withOpacity(
+        ? widget.color.withValues(alpha:
             isDark ? 0.10 : 0.065,
           )
         : isDark
-            ? Colors.white.withOpacity(0.035)
-            : Colors.black.withOpacity(0.022);
+            ? Colors.white.withValues(alpha:0.035)
+            : Colors.black.withValues(alpha:0.022);
 
     final Color border = _isHovered
-        ? widget.color.withOpacity(
+        ? widget.color.withValues(alpha:
             isDark ? 0.35 : 0.28,
           )
         : isDark
-            ? Colors.white.withOpacity(0.10)
-            : Colors.black.withOpacity(0.075);
+            ? Colors.white.withValues(alpha:0.10)
+            : Colors.black.withValues(alpha:0.075);
 
     final Color subtitleColor = isDark
-        ? Colors.white.withOpacity(0.40)
-        : Colors.black.withOpacity(0.42);
+        ? Colors.white.withValues(alpha:0.40)
+        : Colors.black.withValues(alpha:0.42);
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -1850,7 +1849,7 @@ class _StoreActionButtonState extends State<_StoreActionButton> {
             boxShadow: _isHovered
                 ? [
                     BoxShadow(
-                      color: widget.color.withOpacity(
+                      color: widget.color.withValues(alpha:
                         isDark ? 0.12 : 0.06,
                       ),
                       blurRadius: 18,
@@ -1866,7 +1865,7 @@ class _StoreActionButtonState extends State<_StoreActionButton> {
                 width: 38,
                 height: 38,
                 decoration: BoxDecoration(
-                  color: widget.color.withOpacity(
+                  color: widget.color.withValues(alpha:
                     _isHovered
                         ? 0.13
                         : isDark

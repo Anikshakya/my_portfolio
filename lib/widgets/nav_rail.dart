@@ -20,7 +20,7 @@ class HudNavRail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 64,
-      color: HudColors.surface.withOpacity(0.95),
+      color: HudColors.surface.withValues(alpha:0.95),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(_items.length, (i) {
@@ -34,7 +34,7 @@ class HudNavRail extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(6),
                 color: isActive
-                    ? HudColors.cyan.withOpacity(0.12)
+                    ? HudColors.cyan.withValues(alpha:0.12)
                     : Colors.transparent,
                 border: Border.all(
                   color: isActive ? HudColors.cyan : Colors.transparent,

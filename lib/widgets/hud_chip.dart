@@ -28,7 +28,7 @@ class HudChip extends StatelessWidget {
           boxShadow: isActive
               ? [
                   BoxShadow(
-                      color: HudColors.primary.withOpacity(0.3), blurRadius: 8)
+                      color: HudColors.primary.withValues(alpha:0.3), blurRadius: 8)
                 ]
               : [],
         ),

@@ -60,24 +60,24 @@ class HudColors {
       ? const Color(0x66191B1E)
       : const Color(0xFFF5F7F8);
   static Color get selectionBarBorder => HudThemeController.instance.isDark
-      ? Colors.white.withOpacity(0.08)
-      : Colors.black.withOpacity(0.065);
+      ? Colors.white.withValues(alpha:0.08)
+      : Colors.black.withValues(alpha:0.065);
   static Color get inactiveChipSurface => HudThemeController.instance.isDark
-      ? Colors.white.withOpacity(0.035)
+      ? Colors.white.withValues(alpha:0.035)
       : Colors.white;
   static Color get inactiveChipBorder => HudThemeController.instance.isDark
-      ? Colors.white.withOpacity(0.08)
-      : Colors.black.withOpacity(0.055);
+      ? Colors.white.withValues(alpha:0.08)
+      : Colors.black.withValues(alpha:0.055);
   static Color get chipBorder => HudThemeController.instance.isDark
       ? const Color(0x667F6C3E)
       : const Color(0x668C733A);
   static Color get cardBorder => HudThemeController.instance.isDark
-      ? Colors.white.withOpacity(0.12)
-      : Colors.black.withOpacity(0.075);
+      ? Colors.white.withValues(alpha:0.12)
+      : Colors.black.withValues(alpha:0.075);
   static Color get hoverBorder => HudThemeController.instance.isDark
-      ? primary.withOpacity(0.75)
-      : primary.withOpacity(0.45);
-  static Color get shadowColor => Colors.black.withOpacity(
+      ? primary.withValues(alpha:0.75)
+      : primary.withValues(alpha:0.45);
+  static Color get shadowColor => Colors.black.withValues(alpha:
         HudThemeController.instance.isDark ? 0.14 : 0.08,
       );
   static Color get onPrimary => HudThemeController.instance.isDark
@@ -125,7 +125,7 @@ BoxDecoration hudPanelDecoration({
       border: Border.all(color: borderColor, width: 1),
       boxShadow: [
         BoxShadow(
-          color: HudColors.primary.withOpacity(isDark ? glowOpacity : 0.08),
+          color: HudColors.primary.withValues(alpha:isDark ? glowOpacity : 0.08),
           blurRadius: 12,
           spreadRadius: 0,
         ),

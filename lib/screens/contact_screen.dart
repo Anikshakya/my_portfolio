@@ -165,7 +165,7 @@ class _ContactScreenState extends State<ContactScreen> {
   ) {
     return HudPanel(
       padding: const EdgeInsets.all(24),
-      borderColor: cyanColor.withOpacity(0.25),
+      borderColor: cyanColor.withValues(alpha:0.25),
       child: Form(
         key: _formKey,
         child: Column(
@@ -343,15 +343,15 @@ class _ContactScreenState extends State<ContactScreen> {
 
     final fillColor = isDark
         ? Color.alphaBlend(
-            colorScheme.onSurface.withOpacity(0.035),
+            colorScheme.onSurface.withValues(alpha:0.035),
             colorScheme.surface,
           )
         : Color.alphaBlend(
-            colorScheme.primary.withOpacity(0.035),
+            colorScheme.primary.withValues(alpha:0.035),
             colorScheme.surface,
           );
 
-    final borderColor = colorScheme.outline.withOpacity(
+    final borderColor = colorScheme.outline.withValues(alpha:
       isDark ? 0.28 : 0.22,
     );
 
@@ -362,7 +362,7 @@ class _ContactScreenState extends State<ContactScreen> {
           label,
           style: HudTextStyles.mono(
             9.5,
-            color: colorScheme.onSurface.withOpacity(0.58),
+            color: colorScheme.onSurface.withValues(alpha:0.58),
           ).copyWith(
             letterSpacing: 1.15,
           ),
@@ -385,7 +385,7 @@ class _ContactScreenState extends State<ContactScreen> {
             hintText: hint,
             hintStyle: HudTextStyles.body(
               12.5,
-              color: colorScheme.onSurface.withOpacity(0.35),
+              color: colorScheme.onSurface.withValues(alpha:0.35),
             ),
             prefixIcon: Padding(
               padding: EdgeInsets.only(
@@ -396,7 +396,7 @@ class _ContactScreenState extends State<ContactScreen> {
               child: Icon(
                 icon,
                 size: 17,
-                color: colorScheme.onSurface.withOpacity(0.42),
+                color: colorScheme.onSurface.withValues(alpha:0.42),
               ),
             ),
             prefixIconConstraints: const BoxConstraints(
@@ -423,14 +423,14 @@ class _ContactScreenState extends State<ContactScreen> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
               borderSide: BorderSide(
-                color: cyanColor.withOpacity(0.7),
+                color: cyanColor.withValues(alpha:0.7),
                 width: 1.2,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
               borderSide: BorderSide(
-                color: colorScheme.error.withOpacity(0.7),
+                color: colorScheme.error.withValues(alpha:0.7),
               ),
             ),
             focusedErrorBorder: OutlineInputBorder(
@@ -570,7 +570,7 @@ $name
   ) {
     return HudPanel(
       padding: const EdgeInsets.all(24),
-      borderColor: colorScheme.outline.withOpacity(0.22),
+      borderColor: colorScheme.outline.withValues(alpha:0.22),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -582,9 +582,9 @@ $name
                   height: 36,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: cyanColor.withOpacity(0.08),
+                    color: cyanColor.withValues(alpha:0.08),
                     border: Border.all(
-                      color: cyanColor.withOpacity(0.28),
+                      color: cyanColor.withValues(alpha:0.28),
                     ),
                   ),
                   child: Icon(
@@ -622,7 +622,7 @@ $name
           const SizedBox(height: 22),
           Divider(
             height: 1,
-            color: colorScheme.outline.withOpacity(0.16),
+            color: colorScheme.outline.withValues(alpha:0.16),
           ),
           const SizedBox(height: 18),
           _contactDetail(
@@ -659,7 +659,7 @@ $name
               'SOCIAL NETWORKS',
               style: HudTextStyles.mono(
                 9,
-                color: colorScheme.onSurface.withOpacity(0.52),
+                color: colorScheme.onSurface.withValues(alpha:0.52),
               ).copyWith(
                 letterSpacing: 1.25,
               ),
@@ -706,9 +706,9 @@ $name
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: accentColor.withOpacity(0.07),
+              color: accentColor.withValues(alpha:0.07),
               border: Border.all(
-                color: accentColor.withOpacity(0.18),
+                color: accentColor.withValues(alpha:0.18),
               ),
               borderRadius: BorderRadius.circular(5),
             ),
@@ -727,7 +727,7 @@ $name
                   label,
                   style: HudTextStyles.mono(
                     8,
-                    color: colorScheme.onSurface.withOpacity(0.48),
+                    color: colorScheme.onSurface.withValues(alpha:0.48),
                   ).copyWith(
                     letterSpacing: 1.0,
                   ),
@@ -748,7 +748,7 @@ $name
           Icon(
             Icons.arrow_outward_rounded,
             size: 14,
-            color: colorScheme.onSurface.withOpacity(0.35),
+            color: colorScheme.onSurface.withValues(alpha:0.35),
           ),
         ],
       ),
@@ -851,11 +851,11 @@ $name
 
     final background = isDark
         ? Color.alphaBlend(
-            cyanColor.withOpacity(0.035),
+            cyanColor.withValues(alpha:0.035),
             colorScheme.surface,
           )
         : Color.alphaBlend(
-            cyanColor.withOpacity(0.045),
+            cyanColor.withValues(alpha:0.045),
             colorScheme.surface,
           );
 
@@ -866,7 +866,7 @@ $name
         color: background,
         borderRadius: BorderRadius.circular(6),
         border: Border.all(
-          color: cyanColor.withOpacity(0.18),
+          color: cyanColor.withValues(alpha:0.18),
         ),
       ),
       child: Row(
@@ -881,7 +881,7 @@ $name
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: HudColors.green.withOpacity(0.35),
+                  color: HudColors.green.withValues(alpha:0.35),
                   blurRadius: 7,
                 ),
               ],
@@ -906,7 +906,7 @@ $name
                   'Open to freelance projects, collaborations and international opportunities.',
                   style: HudTextStyles.body(
                     11.5,
-                    color: colorScheme.onSurface.withOpacity(0.62),
+                    color: colorScheme.onSurface.withValues(alpha:0.62),
                   ).copyWith(
                     height: 1.45,
                   ),
@@ -950,15 +950,15 @@ $name
      */
     final footerSurface = isDark
         ? Color.alphaBlend(
-            colorScheme.onSurface.withOpacity(0.025),
+            colorScheme.onSurface.withValues(alpha:0.025),
             colorScheme.surface,
           )
         : Color.alphaBlend(
-            colorScheme.primary.withOpacity(0.025),
+            colorScheme.primary.withValues(alpha:0.025),
             colorScheme.surface,
           );
 
-    final footerBorder = colorScheme.outline.withOpacity(
+    final footerBorder = colorScheme.outline.withValues(alpha:
       isDark ? 0.18 : 0.22,
     );
 
@@ -988,7 +988,7 @@ $name
                   textAlign: TextAlign.center,
                   style: HudTextStyles.mono(
                     8.5,
-                    color: colorScheme.onSurface.withOpacity(0.52),
+                    color: colorScheme.onSurface.withValues(alpha:0.52),
                   ).copyWith(
                     letterSpacing: 0.65,
                   ),
@@ -1012,7 +1012,7 @@ $name
                   overflow: TextOverflow.ellipsis,
                   style: HudTextStyles.mono(
                     8.5,
-                    color: colorScheme.onSurface.withOpacity(0.52),
+                    color: colorScheme.onSurface.withValues(alpha:0.52),
                   ).copyWith(
                     letterSpacing: 0.65,
                   ),
@@ -1047,7 +1047,7 @@ $name
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: HudColors.green.withOpacity(0.35),
+                color: HudColors.green.withValues(alpha:0.35),
                 blurRadius: 5,
               ),
             ],
@@ -1068,7 +1068,7 @@ $name
           timestamp,
           style: HudTextStyles.mono(
             8.5,
-            color: colorScheme.onSurface.withOpacity(0.42),
+            color: colorScheme.onSurface.withValues(alpha:0.42),
           ).copyWith(
             letterSpacing: 0.7,
           ),
@@ -1093,9 +1093,9 @@ $name
           width: 30,
           height: 30,
           decoration: BoxDecoration(
-            color: cyanColor.withOpacity(0.07),
+            color: cyanColor.withValues(alpha:0.07),
             border: Border.all(
-              color: cyanColor.withOpacity(0.2),
+              color: cyanColor.withValues(alpha:0.2),
             ),
             borderRadius: BorderRadius.circular(5),
           ),
@@ -1111,7 +1111,7 @@ $name
             label,
             style: HudTextStyles.mono(
               10,
-              color: colorScheme.onSurface.withOpacity(0.65),
+              color: colorScheme.onSurface.withValues(alpha:0.65),
             ).copyWith(
               letterSpacing: 1.25,
             ),
@@ -1223,16 +1223,16 @@ class _SocialHoverButtonState extends State<_SocialHoverButton> {
 
     final normalBackground = isDark
         ? Color.alphaBlend(
-            widget.link.color.withOpacity(0.025),
+            widget.link.color.withValues(alpha:0.025),
             widget.colorScheme.surface,
           )
         : Color.alphaBlend(
-            widget.link.color.withOpacity(0.04),
+            widget.link.color.withValues(alpha:0.04),
             widget.colorScheme.surface,
           );
 
     final hoverBackground = Color.alphaBlend(
-      widget.link.color.withOpacity(
+      widget.link.color.withValues(alpha:
         isDark ? 0.10 : 0.075,
       ),
       widget.colorScheme.surface,
@@ -1269,8 +1269,8 @@ class _SocialHoverButtonState extends State<_SocialHoverButton> {
             borderRadius: BorderRadius.circular(5),
             border: Border.all(
               color: _hovered
-                  ? widget.link.color.withOpacity(0.70)
-                  : widget.colorScheme.outline.withOpacity(
+                  ? widget.link.color.withValues(alpha:0.70)
+                  : widget.colorScheme.outline.withValues(alpha:
                       isDark ? 0.24 : 0.25,
                     ),
               width: _hovered ? 1.2 : 1.0,
@@ -1278,7 +1278,7 @@ class _SocialHoverButtonState extends State<_SocialHoverButton> {
             boxShadow: _hovered
                 ? [
                     BoxShadow(
-                      color: widget.link.color.withOpacity(
+                      color: widget.link.color.withValues(alpha:
                         isDark ? 0.18 : 0.10,
                       ),
                       blurRadius: 10,
@@ -1297,14 +1297,14 @@ class _SocialHoverButtonState extends State<_SocialHoverButton> {
                 style: TextStyle(
                   color: _hovered
                       ? widget.link.color
-                      : widget.colorScheme.onSurface.withOpacity(0.68),
+                      : widget.colorScheme.onSurface.withValues(alpha:0.68),
                 ),
                 child: Icon(
                   widget.link.icon,
                   size: 14,
                   color: _hovered
                       ? widget.link.color
-                      : widget.colorScheme.onSurface.withOpacity(0.58),
+                      : widget.colorScheme.onSurface.withValues(alpha:0.58),
                 ),
               ),
               const SizedBox(width: 6),
@@ -1316,7 +1316,7 @@ class _SocialHoverButtonState extends State<_SocialHoverButton> {
                     8.5,
                     color: _hovered
                         ? widget.link.color
-                        : widget.colorScheme.onSurface.withOpacity(0.72),
+                        : widget.colorScheme.onSurface.withValues(alpha:0.72),
                   ).copyWith(
                     fontWeight: _hovered ? FontWeight.w600 : FontWeight.w400,
                     letterSpacing: 0.8,
@@ -1332,7 +1332,7 @@ class _SocialHoverButtonState extends State<_SocialHoverButton> {
                   size: 10,
                   color: _hovered
                       ? widget.link.color
-                      : widget.colorScheme.onSurface.withOpacity(0.35),
+                      : widget.colorScheme.onSurface.withValues(alpha:0.35),
                 ),
               ),
             ],
@@ -1375,16 +1375,16 @@ class _InteractiveContainerState extends State<_InteractiveContainer> {
 
     final normalSurface = isDark
         ? Color.alphaBlend(
-            widget.colorScheme.onSurface.withOpacity(0.025),
+            widget.colorScheme.onSurface.withValues(alpha:0.025),
             widget.colorScheme.surface,
           )
         : Color.alphaBlend(
-            widget.accentColor.withOpacity(0.025),
+            widget.accentColor.withValues(alpha:0.025),
             widget.colorScheme.surface,
           );
 
     final hoverSurface = Color.alphaBlend(
-      widget.accentColor.withOpacity(
+      widget.accentColor.withValues(alpha:
         isDark ? 0.07 : 0.055,
       ),
       widget.colorScheme.surface,
@@ -1408,8 +1408,8 @@ class _InteractiveContainerState extends State<_InteractiveContainer> {
             color: _hovered ? hoverSurface : normalSurface,
             border: Border.all(
               color: _hovered
-                  ? widget.accentColor.withOpacity(0.38)
-                  : widget.colorScheme.outline.withOpacity(
+                  ? widget.accentColor.withValues(alpha:0.38)
+                  : widget.colorScheme.outline.withValues(alpha:
                       isDark ? 0.18 : 0.2,
                     ),
             ),
@@ -1450,7 +1450,7 @@ class _HoverButtonState extends State<_HoverButton> {
   Widget build(BuildContext context) {
     final isDark = widget.colorScheme.brightness == Brightness.dark;
 
-    final normalColor = widget.accentColor.withOpacity(
+    final normalColor = widget.accentColor.withValues(alpha:
       isDark ? 0.88 : 0.92,
     );
 
@@ -1478,7 +1478,7 @@ class _HoverButtonState extends State<_HoverButton> {
             boxShadow: _hovered
                 ? [
                     BoxShadow(
-                      color: widget.accentColor.withOpacity(
+                      color: widget.accentColor.withValues(alpha:
                         isDark ? 0.22 : 0.16,
                       ),
                       blurRadius: 10,

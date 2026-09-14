@@ -325,10 +325,10 @@ class _HomeScreenState extends State<HomeScreen> {
               horizontal: 6,
             ),
             decoration: BoxDecoration(
-              color: HudColors.elevatedSurface.withOpacity(0.35),
+              color: HudColors.elevatedSurface.withValues(alpha:0.35),
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
-                color: HudColors.cyan.withOpacity(0.1),
+                color: HudColors.cyan.withValues(alpha:0.1),
               ),
             ),
             child: Row(
@@ -473,9 +473,9 @@ class _HomeScreenState extends State<HomeScreen> {
             width / 2,
           ),
           border: Border.all(
-            color: HudColors.cyan.withOpacity(0.15),
+            color: HudColors.cyan.withValues(alpha:0.15),
           ),
-          color: HudColors.elevatedSurface.withOpacity(0.35),
+          color: HudColors.elevatedSurface.withValues(alpha:0.35),
         ),
         padding: const EdgeInsets.all(6),
         child: ClipRRect(
@@ -851,7 +851,7 @@ class _SocialChipState extends State<_SocialChip> {
             duration: const Duration(milliseconds: 180),
             curve: Curves.easeOutCubic,
             padding: const EdgeInsets.symmetric(
-              horizontal: 15,
+              horizontal: 8,
               vertical: 8,
             ),
             decoration: BoxDecoration(
@@ -868,7 +868,7 @@ class _SocialChipState extends State<_SocialChip> {
               boxShadow: highlighted
                   ? [
                       BoxShadow(
-                        color: HudColors.primary.withOpacity(0.10),
+                        color: HudColors.primary.withValues(alpha:0.10),
                         blurRadius: 12,
                         spreadRadius: 0,
                       ),

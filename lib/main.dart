@@ -219,25 +219,41 @@ class _PortfolioRootState extends State<PortfolioRoot> {
 }
 
 // ── Top Bar ─────────────────────────────────────────────────────
-
-class _TopBar extends StatelessWidget {
+class _TopBar extends StatefulWidget {
   final int currentIndex;
   final List<String> sectionNames;
   final bool isWide;
   final VoidCallback? onMenuTap;
   final VoidCallback onThemeToggle;
-  const _TopBar(
-      {required this.currentIndex,
-      required this.sectionNames,
-      required this.isWide,
-      required this.onMenuTap,
-      required this.onThemeToggle});
+
+  const _TopBar({
+    required this.currentIndex,
+    required this.sectionNames,
+    required this.isWide,
+    required this.onMenuTap,
+    required this.onThemeToggle,
+  });
+
+  @override
+  State<_TopBar> createState() => _TopBarState();
+}
+
+class _TopBarState extends State<_TopBar> {
+  bool _isResumeHovered = false;
+  bool _isWebHovered = false;
 
   static const _resumeDownloadUrl =
       'https://drive.google.com/uc?export=download&id=1DVXMgBsQ2_-sZ87uilSv-n76lRJsrCFP';
 
+  static const _reactPortfolioUrl = 'https://anikshakya.vercel.app';
+
   Future<void> _downloadResume() async {
     final uri = Uri.parse(_resumeDownloadUrl);
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  Future<void> _openReactPortfolio() async {
+    final uri = Uri.parse(_reactPortfolioUrl);
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
@@ -246,7 +262,7 @@ class _TopBar extends StatelessWidget {
     return Container(
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top + 8,
-        left: isWide ? 16 : 16,
+        left: widget.isWide ? 16 : 16,
         right: 16,
         bottom: 10,
       ),
@@ -259,9 +275,9 @@ class _TopBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          if (!isWide) ...[
+          if (!widget.isWide) ...[
             IconButton(
-              onPressed: onMenuTap,
+              onPressed: widget.onMenuTap,
               tooltip: 'Open navigation',
               icon: const Icon(Icons.menu_rounded,
                   color: HudColors.cyan, size: 22),
@@ -271,7 +287,7 @@ class _TopBar extends StatelessWidget {
             const SizedBox(width: 8),
           ],
           IconButton(
-            onPressed: onThemeToggle,
+            onPressed: widget.onThemeToggle,
             tooltip: 'Toggle theme',
             icon: Icon(
               Theme.of(context).brightness == Brightness.dark
@@ -293,48 +309,119 @@ class _TopBar extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
+
+          // React Website Link Button with Hover Effect
           Tooltip(
-            message: 'Download resume',
-            child: InkWell(
-              onTap: _downloadResume,
-              borderRadius: BorderRadius.circular(3),
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: isWide ? 9 : 7,
-                  vertical: 5,
+            message: 'View React Website',
+            child: MouseRegion(
+              onEnter: (_) => setState(() => _isWebHovered = true),
+              onExit: (_) => setState(() => _isWebHovered = false),
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: _openReactPortfolio,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: widget.isWide ? 9 : 7,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: HudColors.cyan
+                          .withValues(alpha:_isWebHovered ? 0.9 : 0.5),
+                    ),
+                    borderRadius: BorderRadius.circular(3),
+                    color: HudColors.cyan
+                        .withValues(alpha:_isWebHovered ? 0.22 : 0.08),
+                    boxShadow: _isWebHovered
+                        ? [
+                            BoxShadow(
+                                color: HudColors.cyan.withValues(alpha:0.3),
+                                blurRadius: 8)
+                          ]
+                        : [],
+                  ),
+                  child: widget.isWide
+                      ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.language_rounded,
+                                size: 14, color: HudColors.cyan),
+                            const SizedBox(width: 5),
+                            Text('WEB',
+                                style: HudTextStyles.mono(9,
+                                    color: HudColors.cyan)),
+                          ],
+                        )
+                      : const Icon(Icons.language_rounded,
+                          size: 16, color: HudColors.cyan),
                 ),
-                decoration: BoxDecoration(
-                  border: Border.all(color: HudColors.magenta.withOpacity(0.5)),
-                  borderRadius: BorderRadius.circular(3),
-                  color: HudColors.magenta.withOpacity(0.08),
-                ),
-                child: isWide
-                    ? Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.download_rounded,
-                              size: 14, color: HudColors.magenta),
-                          const SizedBox(width: 5),
-                          Text('RESUME',
-                              style: HudTextStyles.mono(9,
-                                  color: HudColors.magenta)),
-                        ],
-                      )
-                    : const Icon(Icons.download_rounded,
-                        size: 16, color: HudColors.magenta),
               ),
             ),
           ),
+
+          const SizedBox(width: 8),
+          
+          // Resume Button with Hover Effect
+          Tooltip(
+            message: 'Download resume',
+            child: MouseRegion(
+              onEnter: (_) => setState(() => _isResumeHovered = true),
+              onExit: (_) => setState(() => _isResumeHovered = false),
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: _downloadResume,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: widget.isWide ? 11 : 8,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: HudColors.cyan
+                          .withValues(alpha:_isResumeHovered ? 0.9 : 0.5),
+                    ),
+                    borderRadius: BorderRadius.circular(3),
+                    color: HudColors.cyan
+                        .withValues(alpha:_isResumeHovered ? 0.22 : 0.08),
+                    boxShadow: _isResumeHovered
+                        ? [
+                            BoxShadow(
+                                color: HudColors.cyan.withValues(alpha:0.3),
+                                blurRadius: 8)
+                          ]
+                        : [],
+                  ),
+                  child: widget.isWide
+                      ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.download_rounded,
+                                size: 14, color: HudColors.cyan),
+                            const SizedBox(width: 5),
+                            Text('RESUME',
+                                style: HudTextStyles.mono(9,
+                                    color: HudColors.cyan)),
+                          ],
+                        )
+                      : const Icon(Icons.download_rounded,
+                          size: 16, color: HudColors.cyan),
+                ),
+              ),
+            ),
+          ),
+          
           const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
-              border: Border.all(color: HudColors.cyan.withOpacity(0.25)),
+              border: Border.all(color: HudColors.cyan.withValues(alpha:0.25)),
               borderRadius: BorderRadius.circular(3),
-              color: HudColors.cyan.withOpacity(0.05),
+              color: HudColors.cyan.withValues(alpha:0.05),
             ),
-            child:
-                Text(sectionNames[currentIndex], style: HudTextStyles.mono(9)),
+            child: Text(widget.sectionNames[widget.currentIndex],
+                style: HudTextStyles.mono(9)),
           ),
         ],
       ),
@@ -413,7 +500,7 @@ class _MobileDrawer extends StatelessWidget {
                     ),
                   ),
                   tileColor: isSelected
-                      ? HudColors.cyan.withOpacity(0.1)
+                      ? HudColors.cyan.withValues(alpha:0.1)
                       : Colors.transparent,
                   onTap: () {
                     Navigator.of(context).pop();

@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import '../theme/hud_theme.dart';
 
@@ -12,45 +11,14 @@ class AnimatedBackground extends StatefulWidget {
 class _AnimatedBackgroundState extends State<AnimatedBackground>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late List<Particle> particles;
-  late List<Star> stars;
-  final Random random = Random();
-  double time = 0;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 60),
+      duration: const Duration(seconds: 15),
     )..repeat();
-    particles = [];
-    stars = [];
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (particles.isEmpty) {
-      _initializeParticles();
-    }
-    if (stars.isEmpty) {
-      _initializeStars();
-    }
-  }
-
-  void _initializeParticles() {
-    particles.clear();
-    for (int i = 0; i < 70; i++) {
-      particles.add(Particle(random));
-    }
-  }
-
-  void _initializeStars() {
-    stars.clear();
-    for (int i = 0; i < 150; i++) {
-      stars.add(Star(random));
-    }
   }
 
   @override
@@ -62,16 +30,18 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    
+    // Choose appropriate contrast color based on theme
+    final lineColor = isDarkMode ? HudColors.primary : const Color(0xFF0F172A); // Dark slate for light mode
+
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) => IgnorePointer(
         ignoring: true,
         child: CustomPaint(
-          painter: _BackgroundPainter(
-            particles,
-            stars,
-            _controller.value * 60,
-            HudColors.primary,
+          painter: _HudGridBackgroundPainter(
+            _controller.value,
+            lineColor,
             isDarkMode,
           ),
           size: Size.infinite,
@@ -81,158 +51,81 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
   }
 }
 
-class Particle {
-  final Random random;
-  double x, y, size, speed, angle;
-  double opacity;
-  double baseSize;
-  double twinkleOffset;
-
-  Particle(this.random)
-      : x = random.nextDouble(),
-        y = random.nextDouble(),
-        baseSize = random.nextDouble() * 2 + 2,
-        size = 0,
-        speed = random.nextDouble() * 0.15 + 0.03,
-        angle = random.nextDouble() * 2 * pi,
-        opacity = random.nextDouble() * 0.5 + 0.3,
-        twinkleOffset = random.nextDouble() * 2 * pi;
-
-  void update(double time) {
-    size = baseSize * (1 + sin(time * speed * 3 + twinkleOffset) * 0.3);
-    opacity = 0.5 + 0.5 * sin(time * speed * 4 + twinkleOffset);
-
-    x += cos(angle) * speed * 0.0015;
-    y += sin(angle) * speed * 0.0015;
-
-    if (x < 0 || x > 1) angle = pi - angle;
-    if (y < 0 || y > 1) angle = -angle;
-  }
-}
-
-class Star {
-  final Random random;
-  double x, y, size, baseOpacity, twinkleOffset;
-
-  Star(this.random)
-      : x = random.nextDouble(),
-        y = random.nextDouble(),
-        size = random.nextDouble() * 1.2 + 0.3,
-        baseOpacity = random.nextDouble() * 0.3 + 0.1,
-        twinkleOffset = random.nextDouble() * 2 * pi;
-
-  double getOpacity(double time) {
-    return baseOpacity + 0.5 * sin(time * 2 + twinkleOffset);
-  }
-}
-
-class _BackgroundPainter extends CustomPainter {
-  final List<Particle> particles;
-  final List<Star> stars;
-  final double time;
-  final Color baseColor;
+class _HudGridBackgroundPainter extends CustomPainter {
+  final double progress;
+  final Color lineColor;
   final bool isDarkMode;
 
-  late final Paint particlePaint;
-  late final Paint linePaint;
-  late final Paint starPaint;
-
-  _BackgroundPainter(
-    this.particles,
-    this.stars,
-    this.time,
-    this.baseColor,
+  _HudGridBackgroundPainter(
+    this.progress,
+    this.lineColor,
     this.isDarkMode,
-  ) {
-    particlePaint = Paint();
-    linePaint = Paint()
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke;
-    starPaint = Paint();
-  }
+  );
 
   @override
   void paint(Canvas canvas, Size size) {
     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
 
-    // Background - simpler for light mode
-    final backgroundPaint = Paint()
+    // 1. Deep Base Background
+    final bgPaint = Paint()
       ..color = isDarkMode ? HudColors.background : HudColors.lightBackground;
-    canvas.drawRect(rect, backgroundPaint);
+    canvas.drawRect(rect, bgPaint);
 
-    // Draw stars - black in light mode, white in dark mode
-    for (final star in stars) {
-      final starOpacity = star.getOpacity(time).clamp(0, 1);
-      starPaint.color = HudColors.primary.withOpacity(
-        starOpacity * (isDarkMode ? 0.18 : 0.10),
-      );
-      canvas.drawCircle(
-        Offset(star.x * size.width, star.y * size.height),
-        star.size,
-        starPaint,
-      );
+    // 2. Atmospheric Radial Glow
+    final radialGradient = RadialGradient(
+      center: const Alignment(0.0, -0.4),
+      radius: 0.9,
+      colors: [
+        lineColor.withValues(alpha:isDarkMode ? 0.08 : 0.03),
+        lineColor.withValues(alpha:0.0),
+      ],
+    );
+    final radialPaint = Paint()
+      ..shader = radialGradient.createShader(rect);
+    canvas.drawRect(rect, radialPaint);
+
+    // 3. Precision Cyber-Grid (Slightly higher opacity in light mode for crisp visibility)
+    final gridPaint = Paint()
+      ..color = lineColor.withValues(alpha:isDarkMode ? 0.05 : 0.08)
+      ..strokeWidth = 1
+      ..style = PaintingStyle.stroke;
+
+    const double gridSize = 50.0;
+    
+    // Vertical Grid Lines
+    for (double x = 0; x <= size.width; x += gridSize) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
     }
 
-    for (final particle in particles) {
-      particle.update(time);
+    // Horizontal Grid Lines
+    for (double y = 0; y <= size.height; y += gridSize) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
     }
 
-    // Draw connection lines - more subtle in light mode
-    for (int i = 0; i < particles.length; i++) {
-      for (int j = i + 1; j < particles.length; j++) {
-        final p1 = particles[i];
-        final p2 = particles[j];
-        final dx = p1.x - p2.x;
-        final dy = p1.y - p2.y;
-        final distance = sqrt(dx * dx + dy * dy);
+    // 4. Subtle Animated Scanning Horizon Line
+    final scanY = (progress * size.height * 1.5) - (size.height * 0.25);
+    if (scanY >= 0 && scanY <= size.height) {
+      final scanPaint = Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            lineColor.withValues(alpha:0.0),
+            lineColor.withValues(alpha:isDarkMode ? 0.15 : 0.12),
+            lineColor.withValues(alpha:0.0),
+          ],
+        ).createShader(Rect.fromLTWH(0, scanY, size.width, 2))
+        ..strokeWidth = 1.5
+        ..style = PaintingStyle.stroke;
 
-        if (distance < 0.15) {
-          final alpha = (1 - distance / 0.15) * (isDarkMode ? 0.2 : 0.1);
-          linePaint.color = HudColors.primary.withOpacity(
-            alpha * (isDarkMode ? 0.35 : 0.18),
-          );
-          canvas.drawLine(
-            Offset(p1.x * size.width, p1.y * size.height),
-            Offset(p2.x * size.width, p2.y * size.height),
-            linePaint,
-          );
-        }
-      }
+      canvas.drawLine(Offset(0, scanY), Offset(size.width, scanY), scanPaint);
     }
-
-    // Draw glowing particles with theme-appropriate glow colors
-    for (final particle in particles) {
-      final pos = Offset(particle.x * size.width, particle.y * size.height);
-      final particleOpacity = particle.opacity.clamp(0, 1);
-
-      // Glow effect - white for dark mode, black for light mode
-      const glowColor = HudColors.primary;
-
-      // Outer glow
-      final outerGlowPaint = Paint()
-        ..color =
-            glowColor.withOpacity(particleOpacity * (isDarkMode ? 0.18 : 0.08))
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
-      canvas.drawCircle(pos, particle.size * 6, outerGlowPaint);
-
-      // Inner glow - only in dark mode for stronger effect
-      if (isDarkMode) {
-        final innerGlowPaint = Paint()
-          ..color = glowColor.withOpacity(particleOpacity * 0.1)
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5);
-        canvas.drawCircle(pos, particle.size * 3.5, innerGlowPaint);
-      }
-
-      // Core particle - use base color but adjust for theme
-      particlePaint.color = baseColor.withOpacity(
-        particleOpacity * (isDarkMode ? 0.8 : 0.55),
-      );
-      canvas.drawCircle(pos, particle.size, particlePaint);
-    }
-
-    // Remove grid for cleaner look in both modes
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _HudGridBackgroundPainter oldDelegate) {
+    return oldDelegate.progress != progress ||
+        oldDelegate.isDarkMode != isDarkMode ||
+        oldDelegate.lineColor != lineColor;
+  }
 }

@@ -58,11 +58,11 @@ class _PremiumBackgroundPainter extends CustomPainter {
         ..shader = LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [glow.withOpacity(0.2 + phase * 0.08), Colors.transparent],
+          colors: [glow.withValues(alpha:0.2 + phase * 0.08), Colors.transparent],
         ).createShader(Offset.zero & size),
     );
     final linePaint = Paint()
-      ..color = HudColors.primary.withOpacity(isDark ? 0.035 : 0.06)
+      ..color = HudColors.primary.withValues(alpha:isDark ? 0.035 : 0.06)
       ..strokeWidth = 1;
     for (var index = 1; index < 12; index++) {
       final x = size.width * index / 12;

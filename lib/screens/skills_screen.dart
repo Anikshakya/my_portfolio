@@ -267,7 +267,7 @@ class _HoverableHudChipState extends State<_HoverableHudChip> {
             boxShadow: isActive && !isDark
                 ? [
                     BoxShadow(
-                      color: HudColors.primary.withOpacity(0.16),
+                      color: HudColors.primary.withValues(alpha:0.16),
                       blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),
@@ -336,20 +336,20 @@ class _HoverableCarouselArrowState extends State<_HoverableCarouselArrow> {
               border: Border.all(
                 color: _isHovered
                     ? HudColors.cyan
-                    : HudColors.cyan.withOpacity(0.5),
+                    : HudColors.cyan.withValues(alpha:0.5),
                 width: _isHovered ? 2.0 : 1.5,
               ),
               boxShadow: _isHovered
                   ? [
                       BoxShadow(
-                        color: HudColors.cyan.withOpacity(0.4),
+                        color: HudColors.cyan.withValues(alpha:0.4),
                         blurRadius: 16,
                         spreadRadius: 2,
                       ),
                     ]
                   : [
                       BoxShadow(
-                        color: HudColors.primary.withOpacity(0.08),
+                        color: HudColors.primary.withValues(alpha:0.08),
                         blurRadius: 8,
                       ),
                     ],
@@ -427,7 +427,7 @@ class _SkillCardState extends State<_SkillCard>
             width: _hovered ? 1.5 : 1,
           ),
           boxShadow: _hovered
-              ? [BoxShadow(color: accentColor.withOpacity(0.2), blurRadius: 18)]
+              ? [BoxShadow(color: accentColor.withValues(alpha:0.2), blurRadius: 18)]
               : [BoxShadow(color: HudColors.shadowColor, blurRadius: 8)],
         ),
         child: Column(
@@ -439,9 +439,9 @@ class _SkillCardState extends State<_SkillCard>
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: skill.color.withOpacity(0.1),
+                  color: skill.color.withValues(alpha:0.1),
                   borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: skill.color.withOpacity(0.3)),
+                  border: Border.all(color: skill.color.withValues(alpha:0.3)),
                 ),
                 child: Icon(Icons.bolt, color: skill.color, size: 14),
               ),
@@ -457,8 +457,8 @@ class _SkillCardState extends State<_SkillCard>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                 decoration: BoxDecoration(
-                  color: accentColor.withOpacity(0.08),
-                  border: Border.all(color: accentColor.withOpacity(0.3)),
+                  color: accentColor.withValues(alpha:0.08),
+                  border: Border.all(color: accentColor.withValues(alpha:0.3)),
                   borderRadius: BorderRadius.circular(3),
                 ),
                 child: Text(
@@ -487,7 +487,7 @@ class _SkillCardState extends State<_SkillCard>
                         value: _bar.value,
                         minHeight: 4,
                         backgroundColor:
-                            HudColors.elevatedSurface.withOpacity(0.5),
+                            HudColors.elevatedSurface.withValues(alpha:0.5),
                         valueColor: AlwaysStoppedAnimation(skill.color),
                       ),
                     ),
@@ -510,9 +510,9 @@ class _SkillCardState extends State<_SkillCard>
                         padding: const EdgeInsets.symmetric(
                             horizontal: 5, vertical: 2),
                         decoration: BoxDecoration(
-                          color: HudColors.cyan.withOpacity(0.04),
+                          color: HudColors.cyan.withValues(alpha:0.04),
                           border: Border.all(
-                              color: HudColors.cyan.withOpacity(0.12)),
+                              color: HudColors.cyan.withValues(alpha:0.12)),
                           borderRadius: BorderRadius.circular(3),
                         ),
                         child: Text(tag, style: HudTextStyles.mono(7)),
