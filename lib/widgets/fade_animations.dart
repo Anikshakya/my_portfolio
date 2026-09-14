@@ -1,241 +1,127 @@
 import 'package:flutter/material.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
-class FadeInUp extends StatefulWidget {
+/// Shared entrance animation for the portfolio screens.
+///
+/// Tuned with an Apple-style cinematic feel: longer duration, deeper spatial 
+/// scaling, and an ultra-smooth custom ease-out curve.
+class SmoothFade extends StatefulWidget {
   final Widget child;
   final Duration duration;
   final Duration delay;
-  final Function(AnimationController)? controller;
-  final bool manualTrigger;
-  final bool animate;
-  final double from;
+  final double slideBegin;
+  final double scaleBegin;
+  final double visibleFraction;
 
-  // ignore: use_super_parameters
-  FadeInUp(
-      {key,
-      required this.child,
-      this.duration = const Duration(milliseconds: 800),
-      this.delay = const Duration(milliseconds: 0),
-      this.controller,
-      this.manualTrigger = false,
-      this.animate = true,
-      this.from = 100})
-      : super(key: key) {
-    if (manualTrigger == true && controller == null) {
-      throw FlutterError('If you want to use manualTrigger:true, \n\n'
-          'Then you must provide the controller property, that is a callback like:\n\n'
-          ' ( controller: AnimationController) => yourController = controller \n\n');
-    }
-  }
+  const SmoothFade({
+    super.key,
+    required this.child,
+    this.duration = const Duration(milliseconds: 1050), // Slower, heavier, more cinematic
+    this.delay = Duration.zero,
+    this.slideBegin = 40.0, // Pixel-based offset for physical weight
+    this.scaleBegin = 0.94, // Deeper scale for a true "coming forward" depth
+    this.visibleFraction = 0.15,
+  });
 
   @override
-  FadeInUpState createState() => FadeInUpState();
+  State<SmoothFade> createState() => _SmoothFadeState();
 }
 
-/// FadeState class
-/// The animation magic happens here
-class FadeInUpState extends State<FadeInUp>
+class _SmoothFadeState extends State<SmoothFade>
     with SingleTickerProviderStateMixin {
-  /// Animation controller if requested
-  late AnimationController controller;
+  late final AnimationController _controller;
+  late final Animation<double> _opacity;
+  late final Animation<Offset> _slide;
+  late final Animation<double> _scale;
+  bool _started = false;
 
-  /// widget is disposed?
-  bool disposed = false;
-
-  /// Animation movement
-  late Animation<double> animation;
-
-  /// Animation opacity
-  late Animation<double> opacity;
-
-  @override
-  void dispose() {
-    disposed = true;
-    controller.dispose();
-    super.dispose();
-  }
+  // Apple's signature smooth-out curve approximation: 
+  // Fast initial motion that decelerates into an extremely gentle finish.
+  static const Cubic _appleEaseOut = Cubic(0.16, 1.0, 0.3, 1.0);
 
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+    );
 
-    controller = AnimationController(duration: widget.duration, vsync: this);
+    // Staggered opacity: fades in quicker than structural movement completes,
+    // mirroring Apple's technique of revealing content early while it settles.
+    _opacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.65, curve: _appleEaseOut),
+      ),
+    );
 
-    animation = Tween<double>(begin: widget.from, end: 0)
-        .animate(CurvedAnimation(parent: controller, curve: Curves.easeOut));
-    opacity = Tween<double>(begin: 0, end: 1).animate(
-        CurvedAnimation(parent: controller, curve: const Interval(0, 0.65)));
+    _slide = Tween<Offset>(
+      begin: Offset(0, widget.slideBegin),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: _appleEaseOut,
+      ),
+    );
 
-    if (!widget.manualTrigger && widget.animate) {
-      Future.delayed(widget.delay, () {
-        if (!disposed) {
-          controller.forward();
-        }
+    _scale = Tween<double>(
+      begin: widget.scaleBegin,
+      end: 1.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: _appleEaseOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _start() {
+    if (_started) return;
+    _started = true;
+    if (widget.delay == Duration.zero) {
+      _controller.forward();
+    } else {
+      Future<void>.delayed(widget.delay, () {
+        if (mounted) _controller.forward();
       });
-    }
-
-    if (widget.controller is Function) {
-      widget.controller!(controller);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.animate &&
-        widget.delay.inMilliseconds == 0 &&
-        widget.manualTrigger == false) {
-      controller.forward();
-    }
-
-    /// If FALSE, animate everything back to the original state
-    if (!widget.animate) {
-      controller.animateBack(0);
-    }
-
-    return AnimatedBuilder(
-        animation: controller,
-        builder: (BuildContext context, Widget? child) {
-          return Transform.translate(
-              offset: Offset(0, animation.value),
-              child: Opacity(
-                opacity: opacity.value,
-                child: widget.child,
-              ));
-        });
-  }
-}
-class FadeInRight extends StatefulWidget {
-  final Widget child;
-  final Duration duration;
-  final Duration delay;
-  final Function(AnimationController)? controller;
-  final bool manualTrigger;
-  final bool animate;
-  final double from;
-
-  // ignore: use_super_parameters
-  FadeInRight(
-      {key,
-      required this.child,
-      this.duration = const Duration(milliseconds: 800),
-      this.delay = const Duration(milliseconds: 0),
-      this.controller,
-      this.manualTrigger = false,
-      this.animate = true,
-      this.from = 100})
-      : super(key: key) {
-    if (manualTrigger == true && controller == null) {
-      throw FlutterError('If you want to use manualTrigger:true, \n\n'
-          'Then you must provide the controller property, that is a callback like:\n\n'
-          ' ( controller: AnimationController) => yourController = controller \n\n');
-    }
-  }
-
-  @override
-  FadeInRightState createState() => FadeInRightState();
-}
-
-/// FadeState class
-/// The animation magic happens here
-class FadeInRightState extends State<FadeInRight>
-    with SingleTickerProviderStateMixin {
-  late AnimationController controller;
-  bool disposed = false;
-  late Animation<double> animation;
-  late Animation<double> opacity;
-  @override
-  void dispose() {
-    disposed = true;
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    controller = AnimationController(duration: widget.duration, vsync: this);
-
-    animation = Tween<double>(begin: widget.from, end: 0)
-        .animate(CurvedAnimation(parent: controller, curve: Curves.easeOut));
-    opacity = Tween<double>(begin: 0, end: 1).animate(
-        CurvedAnimation(parent: controller, curve: const Interval(0, 0.65)));
-
-    if (!widget.manualTrigger && widget.animate) {
-      Future.delayed(widget.delay, () {
-        if (!disposed) {
-          controller.forward();
+    return VisibilityDetector(
+      key: widget.key ?? ValueKey(widget.hashCode),
+      onVisibilityChanged: (info) {
+        if (info.visibleFraction >= widget.visibleFraction) {
+          _start();
         }
-      });
-    }
-
-    if (widget.controller is Function) {
-      widget.controller!(controller);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (widget.animate &&
-        widget.delay.inMilliseconds == 0 &&
-        widget.manualTrigger == false) {
-      controller.forward();
-    }
-
-    /// If FALSE, animate everything back to the original state
-    if (!widget.animate) {
-      controller.animateBack(0);
-    }
-
-    return AnimatedBuilder(
-        animation: controller,
-        builder: (BuildContext context, Widget? child) {
-          return Transform.translate(
-              offset: Offset(animation.value, 0),
-              child: Opacity(
-                opacity: opacity.value,
-                child: widget.child,
-              ));
-        });
+      },
+      child: AnimatedBuilder(
+        animation: _controller,
+        child: widget.child,
+        builder: (context, child) {
+          return FadeTransition(
+            opacity: _opacity,
+            child: Transform.translate(
+              // Using pixel-based translation for a crisp, high-end feel
+              offset: Offset(0, _slide.value.dy),
+              child: ScaleTransition(
+                scale: _scale,
+                alignment: Alignment.center,
+                child: child,
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 }
-
-class FadeInRightBig extends StatelessWidget {
-  final Widget child;
-  final Duration duration;
-  final Duration delay;
-  final Function(AnimationController)? controller;
-  final bool manualTrigger;
-  final bool animate;
-  final double from;
-
-  // ignore: use_super_parameters
-  FadeInRightBig(
-      {key,
-      required this.child,
-      this.duration = const Duration(milliseconds: 1200),
-      this.delay = const Duration(milliseconds: 0),
-      this.controller,
-      this.manualTrigger = false,
-      this.animate = true,
-      this.from = 600})
-      : super(key: key) {
-    if (manualTrigger == true && controller == null) {
-      throw FlutterError('If you want to use manualTrigger:true, \n\n'
-          'Then you must provide the controller property, that is a callback like:\n\n'
-          ' ( controller: AnimationController) => yourController = controller \n\n');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) => FadeInRight(
-    duration: duration,
-    delay: delay,
-    controller: controller,
-    manualTrigger: manualTrigger,
-    animate: animate,
-    from: from,
-    child: child,
-  );
-}
-
- 

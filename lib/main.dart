@@ -76,6 +76,13 @@ class _PortfolioRootState extends State<PortfolioRoot> {
     final isWide = MediaQuery.of(context).size.width > 700;
     return Scaffold(
       backgroundColor: HudColors.background,
+      drawer: isWide
+          ? null
+          : _MobileDrawer(
+              currentIndex: _currentIndex,
+              sectionNames: _sectionNames,
+              onTap: _scrollTo,
+            ),
       body: Stack(
         children: [
           const Positioned.fill(child: SpaceBackground()),
@@ -109,10 +116,14 @@ class _PortfolioRootState extends State<PortfolioRoot> {
             top: 0,
             left: 0,
             right: 0,
-            child: _TopBar(
-              currentIndex: _currentIndex,
-              sectionNames: _sectionNames,
-              isWide: isWide,
+            child: Builder(
+              builder: (context) => _TopBar(
+                currentIndex: _currentIndex,
+                sectionNames: _sectionNames,
+                isWide: isWide,
+                onMenuTap:
+                    isWide ? null : () => Scaffold.of(context).openDrawer(),
+              ),
             ),
           ),
         ],
@@ -132,17 +143,17 @@ class _PortfolioRootState extends State<PortfolioRoot> {
         _page(
           HomeScreen(onContactTap: () => _scrollTo(4)),
           topPad: topPad + 48,
-          bottomPad: bottomPad,
+          bottomPad: 0,
         ),
         _page(
           const ExperienceScreen(),
           topPad: topPad + 24,
-          bottomPad: bottomPad,
+          bottomPad: 0,
           scrollable: false,
         ),
         _page(const ProjectsScreen(),
             topPad: topPad + 24, bottomPad: bottomPad),
-        _page(const SkillsScreen(), topPad: topPad + 24, bottomPad: bottomPad),
+        _page(const SkillsScreen(), topPad: topPad + 24, bottomPad: 0),
         _page(
           const ContactScreen(),
           topPad: topPad + 24,
@@ -200,10 +211,12 @@ class _TopBar extends StatelessWidget {
   final int currentIndex;
   final List<String> sectionNames;
   final bool isWide;
+  final VoidCallback? onMenuTap;
   const _TopBar(
       {required this.currentIndex,
       required this.sectionNames,
-      required this.isWide});
+      required this.isWide,
+      required this.onMenuTap});
 
   static const _resumeDownloadUrl =
       'https://drive.google.com/uc?export=download&id=1DVXMgBsQ2_-sZ87uilSv-n76lRJsrCFP';
@@ -231,6 +244,17 @@ class _TopBar extends StatelessWidget {
       ),
       child: Row(
         children: [
+          if (!isWide) ...[
+            IconButton(
+              onPressed: onMenuTap,
+              tooltip: 'Open navigation',
+              icon: const Icon(Icons.menu_rounded,
+                  color: HudColors.cyan, size: 22),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+            ),
+            const SizedBox(width: 8),
+          ],
           Expanded(
             child: Text(
               'ANIK SHAKYA // PORTFOLIO',
@@ -290,3 +314,85 @@ class _TopBar extends StatelessWidget {
   }
 }
 
+class _MobileDrawer extends StatelessWidget {
+  final int currentIndex;
+  final List<String> sectionNames;
+  final ValueChanged<int> onTap;
+
+  const _MobileDrawer({
+    required this.currentIndex,
+    required this.sectionNames,
+    required this.onTap,
+  });
+
+  static const _icons = [
+    Icons.person_outline_rounded,
+    Icons.work_outline_rounded,
+    Icons.grid_view_rounded,
+    Icons.bolt_rounded,
+    Icons.mail_outline_rounded,
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      width: 286,
+      backgroundColor: HudColors.surface,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 18, 16, 20),
+              child: Row(
+                children: [
+                  const Icon(Icons.blur_on_rounded,
+                      color: HudColors.cyan, size: 22),
+                  const SizedBox(width: 10),
+                  Text('NAVIGATION', style: HudTextStyles.header(14)),
+                ],
+              ),
+            ),
+            const Divider(color: HudColors.borderCyan, height: 1),
+            const SizedBox(height: 12),
+            ...List.generate(sectionNames.length, (index) {
+              final isSelected = index == currentIndex;
+              return Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+                child: ListTile(
+                  dense: true,
+                  leading: Icon(
+                    _icons[index],
+                    color: isSelected ? HudColors.cyan : HudColors.textMuted,
+                    size: 21,
+                  ),
+                  title: Text(
+                    sectionNames[index],
+                    style: HudTextStyles.mono(
+                      11,
+                      color: isSelected ? HudColors.cyan : HudColors.textMain,
+                    ),
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                    side: BorderSide(
+                      color: isSelected ? HudColors.cyan : Colors.transparent,
+                    ),
+                  ),
+                  tileColor: isSelected
+                      ? HudColors.cyan.withOpacity(0.1)
+                      : Colors.transparent,
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    onTap(index);
+                  },
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+}
