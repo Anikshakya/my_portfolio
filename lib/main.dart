@@ -29,7 +29,7 @@ class PortfolioApp extends StatelessWidget {
     return AnimatedBuilder(
       animation: themeController,
       builder: (context, _) => MaterialApp(
-        title: 'Anik Shakya — Flutter Developer',
+        title: 'Anik Shakya',
         debugShowCheckedModeBanner: false,
         theme: hudTheme(dark: false),
         darkTheme: hudTheme(dark: true),
