@@ -93,10 +93,12 @@ class HudColors {
 }
 
 class HudTextStyles {
+  static const double _scale = 1.08;
+
   static TextStyle header(double size,
           {Color? color, FontWeight weight = FontWeight.w800}) =>
       GoogleFonts.orbitron(
-          fontSize: size,
+          fontSize: size * _scale,
           color: color == null || color == Colors.white
               ? HudColors.textMain
               : color,
@@ -104,10 +106,12 @@ class HudTextStyles {
           letterSpacing: 1.0);
 
   static TextStyle mono(double size, {Color color = HudColors.cyan}) =>
-      GoogleFonts.shareTechMono(fontSize: size, color: color);
+      GoogleFonts.shareTechMono(fontSize: size * _scale, color: color);
 
   static TextStyle body(double size, {Color? color}) => GoogleFonts.inter(
-      fontSize: size, color: color ?? HudColors.textMain, height: 1.55);
+      fontSize: size * _scale,
+      color: color ?? HudColors.textMain,
+      height: 1.55);
 }
 
 BoxDecoration hudPanelDecoration({

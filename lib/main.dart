@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'theme/hud_theme.dart';
-import 'widgets/space_background.dart';
+import 'widgets/animated_background.dart';
 import 'widgets/nav_rail.dart';
 import 'screens/home_screen.dart';
 import 'screens/experience_screen.dart';
@@ -93,7 +93,7 @@ class _PortfolioRootState extends State<PortfolioRoot> {
             ),
       body: Stack(
         children: [
-          const Positioned.fill(child: SpaceBackground()),
+          const Positioned.fill(child: AnimatedBackground()),
           Positioned.fill(
             child: IgnorePointer(
               child: Container(
@@ -171,7 +171,7 @@ class _PortfolioRootState extends State<PortfolioRoot> {
           const ContactScreen(),
           topPad: topPad + 56,
           bottomPad: 0,
-          fullWidth: true,
+          // fullWidth: true,
           scrollable: false,
         ),
       ],
