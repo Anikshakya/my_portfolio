@@ -29,11 +29,36 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Get dependencies
+      - name: Flutter Version
+        run: flutter --version
+
+      - name: Get Dependencies
         run: flutter pub get
+
+      - name: Clean
+        run: flutter clean
 
       - name: Build Flutter Web
         run: flutter build web --release --base-href "/"
+
+      # IMPORTANT:
+      # Verify that Flutter actually generated the files
+      # that GitHub Pages needs.
+      - name: Verify Web Build
+        run: |
+          echo "===== build/web ====="
+          ls -lah build/web
+
+          echo ""
+          echo "===== Required files ====="
+
+          test -f build/web/index.html
+          test -f build/web/flutter_bootstrap.js
+          test -f build/web/manifest.json
+          test -f build/web/main.dart.js
+
+          echo ""
+          echo "All required Flutter Web files exist."
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

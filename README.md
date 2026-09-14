@@ -30,6 +30,14 @@ CNAME	www	anikshakys.github.io
  
  
 # DEPLOYEMNT STEPS
+
+
+flutter clean
+flutter pub get
+flutter build web --release --base-href "/"
+
+
+
 test flutter run -d chrome
 
 create .github/workflows/deploy.yml
