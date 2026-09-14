@@ -595,7 +595,7 @@ $name
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'GET IN TOUCH',
+                  'SOCIALS AND LINKS',
                   textAlign: TextAlign.center,
                   style: HudTextStyles.header(
                     17,
