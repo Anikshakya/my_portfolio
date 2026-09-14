@@ -18,8 +18,8 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
   @override
   Widget build(BuildContext context) {
     final exp = experiences[_selectedIndex];
-    final isWide = MediaQuery.of(context).size.width > 850;
-    final hPad = isWide ? 56.0 : 24.0;
+    final isWide = MediaQuery.of(context).size.width > 900;
+    final hPad = isWide ? 40.0 : 16.0;
     final colorScheme = Theme.of(context).colorScheme;
     final headerTitle = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,7 +38,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
       padding: EdgeInsets.fromLTRB(hPad, 40, hPad, 40),
       child: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1100),
+          constraints: const BoxConstraints(maxWidth: 1200),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,

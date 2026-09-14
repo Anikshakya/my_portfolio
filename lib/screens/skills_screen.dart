@@ -57,8 +57,8 @@ class _SkillsScreenState extends State<SkillsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isWide = MediaQuery.of(context).size.width > 700;
-    final hPad = isWide ? 56.0 : 24.0;
+    final isWide = MediaQuery.of(context).size.width > 900;
+    final hPad = isWide ? 40.0 : 16.0;
 
     // Dynamic grid parameters to ensure accurate vertical centering
     final double cardExtent = isWide ? 152.0 : 160.0;
@@ -69,13 +69,13 @@ class _SkillsScreenState extends State<SkillsScreen> {
     final double dynamicCarouselHeight =
         (cardExtent * rowsCount) + (gridSpacing * (rowsCount - 1)) + 16.0;
 
-    return SizedBox(
-      height: MediaQuery.of(context).size.height - 100,
-      child: Center(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: hPad, vertical: 24),
+    return Center(
+      child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: hPad, vertical: 16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1100),
+            constraints: const BoxConstraints(maxWidth: 1200),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -118,8 +118,8 @@ class _SkillsScreenState extends State<SkillsScreen> {
                             setState(() => _currentPage = page),
                         itemBuilder: (_, page) {
                           final start = page * _itemsPerPage;
-                          final end =
-                              (start + _itemsPerPage).clamp(0, _filtered.length);
+                          final end = (start + _itemsPerPage)
+                              .clamp(0, _filtered.length);
                           final pageSkills = _filtered.sublist(start, end);
 
                           return GridView.builder(
@@ -150,10 +150,11 @@ class _SkillsScreenState extends State<SkillsScreen> {
                         child: ScrollAnimate(
                           key: ValueKey('prev_arrow_$_currentPage'),
                           delay: Duration(
-                              milliseconds:
-                                  (_filtered.length < 9 ? _filtered.length : 9) *
-                                          40 +
-                                      100),
+                              milliseconds: (_filtered.length < 9
+                                          ? _filtered.length
+                                          : 9) *
+                                      40 +
+                                  100),
                           child: _HoverableCarouselArrow(
                             icon: Icons.arrow_back_ios_new_rounded,
                             tooltip: 'Previous skills',
@@ -168,10 +169,11 @@ class _SkillsScreenState extends State<SkillsScreen> {
                         child: ScrollAnimate(
                           key: ValueKey('next_arrow_$_currentPage'),
                           delay: Duration(
-                              milliseconds:
-                                  (_filtered.length < 9 ? _filtered.length : 9) *
-                                          40 +
-                                      100),
+                              milliseconds: (_filtered.length < 9
+                                          ? _filtered.length
+                                          : 9) *
+                                      40 +
+                                  100),
                           child: _HoverableCarouselArrow(
                             icon: Icons.arrow_forward_ios_rounded,
                             tooltip: 'More skills',

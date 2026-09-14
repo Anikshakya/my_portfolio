@@ -60,8 +60,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isWide = MediaQuery.of(context).size.width > 700;
-    final hPad = isWide ? 56.0 : 24.0;
+    final isWide = MediaQuery.of(context).size.width > 900;
+    final hPad = isWide ? 40.0 : 16.0;
     final displayed = _displayedProjects;
     final itemsPerPage = _getItemsPerPage(isWide);
     final pageCount = _getPageCount(isWide);
@@ -73,13 +73,13 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     final double dynamicExtent = isWide ? 242.0 : 250.0;
     final double dynamicCarouselHeight = (dynamicExtent * 2) + 28.0;
 
-    return SizedBox(
-      height: MediaQuery.of(context).size.height - 100,
-      child: Center(
+    return Center(
+      child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: hPad, vertical: 16),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: hPad, vertical: 24),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1100),
+            constraints: const BoxConstraints(maxWidth: 1200),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,

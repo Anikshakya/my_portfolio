@@ -118,8 +118,8 @@ class _ContactScreenState extends State<ContactScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isWide = MediaQuery.of(context).size.width > 700;
-    final hPad = isWide ? 56.0 : 24.0;
+    final isWide = MediaQuery.of(context).size.width > 900;
+    final hPad = isWide ? 40.0 : 16.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
