@@ -71,7 +71,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
 
     // Dynamic grid extent based on screen width
     final double dynamicExtent = isWide ? 242.0 : 250.0;
-    final double dynamicCarouselHeight = (dynamicExtent * 2) + 24.0;
+    final double dynamicCarouselHeight = (dynamicExtent * 2) + 28.0;
 
     return SizedBox(
       height: MediaQuery.of(context).size.height - 100,
@@ -135,7 +135,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
 
                           return GridView.builder(
                             physics: const NeverScrollableScrollPhysics(),
-                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            // Give extra space at the top so the hover lift doesn't clip
+                            padding: const EdgeInsets.only(top: 10, bottom: 4),
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: isWide ? 3 : 1,

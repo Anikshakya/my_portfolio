@@ -21,6 +21,18 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
     final isWide = MediaQuery.of(context).size.width > 850;
     final hPad = isWide ? 56.0 : 24.0;
     final colorScheme = Theme.of(context).colorScheme;
+    final headerTitle = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('CAREER LOGS // ORBIT TIMELINE', style: HudTextStyles.mono(10)),
+        const SizedBox(height: 4),
+        GlowText('WORK EXPERIENCE',
+            style: HudTextStyles.header(18),
+            glowColor: colorScheme.secondary != Colors.transparent
+                ? colorScheme.secondary
+                : HudColors.cyan),
+      ],
+    );
 
     return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(hPad, 40, hPad, 40),
@@ -36,23 +48,12 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                 child: HudPanel(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Flex(
+                    direction: isWide ? Axis.horizontal : Axis.vertical,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('CAREER LOGS // ORBIT TIMELINE',
-                              style: HudTextStyles.mono(10)),
-                          const SizedBox(height: 4),
-                          GlowText('WORK EXPERIENCE',
-                              style: HudTextStyles.header(18),
-                              glowColor: colorScheme.secondary != Colors.transparent
-                                  ? colorScheme.secondary
-                                  : HudColors.cyan),
-                        ],
-                      ),
+                      if (isWide) Expanded(child: headerTitle) else headerTitle,
+                      if (!isWide) const SizedBox(height: 10),
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 4),
@@ -113,7 +114,7 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
           Expanded(
             child: ScrollAnimate(
               key: ValueKey('exp_detail_$_selectedIndex'),
-              child: _detailPanel(exp, colorScheme),
+              child: _detailPanel(exp, colorScheme, isWide: true),
             ),
           ),
         ],
@@ -123,15 +124,12 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
         children: [
           ScrollAnimate(
             key: const ValueKey('exp_timeline_list_mobile'),
-            child: SizedBox(
-              height: 340, // Fixed height container for timeline nodes on mobile
-              child: _timelineList(colorScheme),
-            ),
+            child: _timelineList(colorScheme),
           ),
           const SizedBox(height: 16),
           ScrollAnimate(
             key: ValueKey('exp_detail_mobile_$_selectedIndex'),
-            child: _detailPanel(exp, colorScheme),
+            child: _detailPanel(exp, colorScheme, isWide: false),
           ),
         ],
       );
@@ -203,7 +201,8 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
     );
   }
 
-  Widget _detailPanel(Experience exp, ColorScheme colorScheme) {
+  Widget _detailPanel(Experience exp, ColorScheme colorScheme,
+      {required bool isWide}) {
     final cyanColor = colorScheme.primary != Colors.transparent
         ? colorScheme.primary
         : HudColors.cyan;
@@ -217,26 +216,94 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Flex(
+            direction: isWide ? Axis.horizontal : Axis.vertical,
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: isWide
+                ? MainAxisAlignment.spaceBetween
+                : MainAxisAlignment.start,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
+              if (isWide)
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 4,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
                             exp.title,
                             style: HudTextStyles.header(16,
-                                color: Colors.white,
-                                weight: FontWeight.w700),
+                                color: Colors.white, weight: FontWeight.w700),
                           ),
+                          if (exp.isCurrent) ...[
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: HudColors.green.withOpacity(0.15),
+                                border: Border.all(color: HudColors.green),
+                                borderRadius: BorderRadius.circular(3),
+                              ),
+                              child: Text(
+                                'ACTIVE',
+                                style: HudTextStyles.mono(8,
+                                    color: HudColors.green),
+                              ),
+                            ),
+                          ]
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 12,
+                        runSpacing: 4,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.business_rounded,
+                                  size: 14, color: cyanColor),
+                              const SizedBox(width: 6),
+                              Text(exp.company,
+                                  style:
+                                      HudTextStyles.body(13, color: cyanColor)),
+                            ],
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.location_on_outlined,
+                                  size: 14, color: HudColors.textMuted),
+                              const SizedBox(width: 4),
+                              Text(exp.location,
+                                  style: HudTextStyles.body(12,
+                                      color: HudColors.textMuted)),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                )
+              else
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(
+                          exp.title,
+                          style: HudTextStyles.header(16,
+                              color: Colors.white, weight: FontWeight.w700),
                         ),
                         if (exp.isCurrent) ...[
-                          const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 6, vertical: 2),
@@ -247,45 +314,59 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
                             ),
                             child: Text(
                               'ACTIVE',
-                              style: HudTextStyles.mono(8,
-                                  color: HudColors.green),
+                              style:
+                                  HudTextStyles.mono(8, color: HudColors.green),
                             ),
                           ),
                         ]
                       ],
                     ),
                     const SizedBox(height: 6),
-                    Row(
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        Icon(Icons.business_rounded,
-                            size: 14, color: cyanColor),
-                        const SizedBox(width: 6),
-                        Text(exp.company,
-                            style: HudTextStyles.body(13,
-                                color: cyanColor)),
-                        const SizedBox(width: 12),
-                        const Icon(Icons.location_on_outlined,
-                            size: 14, color: HudColors.textMuted),
-                        const SizedBox(width: 4),
-                        Text(exp.location,
-                            style: HudTextStyles.body(12,
-                                color: HudColors.textMuted)),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.business_rounded,
+                                size: 14, color: cyanColor),
+                            const SizedBox(width: 6),
+                            Text(exp.company,
+                                style:
+                                    HudTextStyles.body(13, color: cyanColor)),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.location_on_outlined,
+                                size: 14, color: HudColors.textMuted),
+                            const SizedBox(width: 4),
+                            Text(exp.location,
+                                style: HudTextStyles.body(12,
+                                    color: HudColors.textMuted)),
+                          ],
+                        ),
                       ],
                     ),
                   ],
                 ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: cyanColor.withOpacity(0.08),
-                  border: Border.all(color: cyanColor.withOpacity(0.25)),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  '${exp.startDate} – ${exp.endDate}',
-                  style: HudTextStyles.mono(10),
+              Padding(
+                padding: EdgeInsets.only(top: isWide ? 0 : 10),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: cyanColor.withOpacity(0.08),
+                    border: Border.all(color: cyanColor.withOpacity(0.25)),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    '${exp.startDate} – ${exp.endDate}',
+                    style: HudTextStyles.mono(10),
+                  ),
                 ),
               ),
             ],
@@ -351,8 +432,13 @@ class _ExperienceScreenState extends State<ExperienceScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Flex(
+            direction: isWide ? Axis.horizontal : Axis.vertical,
+            mainAxisAlignment: isWide
+                ? MainAxisAlignment.spaceBetween
+                : MainAxisAlignment.center,
+            crossAxisAlignment:
+                isWide ? CrossAxisAlignment.center : CrossAxisAlignment.stretch,
             children: [
               _NavButton(
                 label: '◄ NEXT',
@@ -484,12 +570,9 @@ class _TimelineNodeTileState extends State<_TimelineNodeTile> {
                         12,
                         color: isSel
                             ? Colors.white
-                            : (_isHovered
-                                ? cyanColor
-                                : HudColors.textMain),
+                            : (_isHovered ? cyanColor : HudColors.textMain),
                       ).copyWith(
-                        fontWeight:
-                            isSel ? FontWeight.w700 : FontWeight.w500,
+                        fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -508,8 +591,7 @@ class _TimelineNodeTileState extends State<_TimelineNodeTile> {
                 ),
               ),
               if (isSel)
-                Icon(Icons.chevron_right_rounded,
-                    color: cyanColor, size: 16),
+                Icon(Icons.chevron_right_rounded, color: cyanColor, size: 16),
             ],
           ),
         ),
@@ -553,9 +635,7 @@ class _HoverableTechChipState extends State<_HoverableTechChip> {
               ? cyanColor.withOpacity(0.15)
               : const Color(0xCC020614),
           border: Border.all(
-            color: _isHovered
-                ? cyanColor
-                : cyanColor.withOpacity(0.25),
+            color: _isHovered ? cyanColor : cyanColor.withOpacity(0.25),
           ),
           borderRadius: BorderRadius.circular(3),
         ),
@@ -612,13 +692,10 @@ class _NavButtonState extends State<_NavButton> {
             duration: const Duration(milliseconds: 150),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: _isHovered
-                  ? cyanColor.withOpacity(0.15)
-                  : Colors.transparent,
+              color:
+                  _isHovered ? cyanColor.withOpacity(0.15) : Colors.transparent,
               border: Border.all(
-                color: _isHovered
-                    ? cyanColor
-                    : cyanColor.withOpacity(0.4),
+                color: _isHovered ? cyanColor : cyanColor.withOpacity(0.4),
               ),
               borderRadius: BorderRadius.circular(4),
               boxShadow: _isHovered

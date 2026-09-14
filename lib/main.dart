@@ -115,14 +115,6 @@ class _PortfolioRootState extends State<PortfolioRoot> {
               isWide: isWide,
             ),
           ),
-          // Mobile bottom nav
-          if (!isWide)
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: _BottomNav(currentIndex: _currentIndex, onTap: _scrollTo),
-            ),
         ],
       ),
     );
@@ -130,7 +122,7 @@ class _PortfolioRootState extends State<PortfolioRoot> {
 
   Widget _buildPages(bool isWide) {
     final topPad = MediaQuery.of(context).padding.top;
-    final bottomPad = isWide ? 24.0 : 72.0;
+    const bottomPad = 24.0;
 
     return PageView(
       controller: _pageController,
@@ -153,7 +145,7 @@ class _PortfolioRootState extends State<PortfolioRoot> {
         _page(const SkillsScreen(), topPad: topPad + 24, bottomPad: bottomPad),
         _page(
           const ContactScreen(),
-          topPad: 0,
+          topPad: topPad + 24,
           bottomPad: 0,
           fullWidth: true,
           scrollable: false,
@@ -298,62 +290,3 @@ class _TopBar extends StatelessWidget {
   }
 }
 
-// ── Mobile Bottom Nav ────────────────────────────────────────────
-
-class _BottomNav extends StatelessWidget {
-  final int currentIndex;
-  final ValueChanged<int> onTap;
-  const _BottomNav({required this.currentIndex, required this.onTap});
-
-  static const _items = [
-    (Icons.person_outline_rounded, 'About'),
-    (Icons.work_outline_rounded, 'Career'),
-    (Icons.grid_view_rounded, 'Projects'),
-    (Icons.bolt_rounded, 'Skills'),
-    (Icons.mail_outline_rounded, 'Contact'),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).padding.bottom, top: 4),
-      decoration: const BoxDecoration(
-        color: Color(0xF5030810),
-        border: Border(top: BorderSide(color: Color(0x3300F0FF))),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(_items.length, (i) {
-          final active = i == currentIndex;
-          return GestureDetector(
-            onTap: () => onTap(i),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: active
-                    ? HudColors.cyan.withOpacity(0.1)
-                    : Colors.transparent,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(_items[i].$1,
-                      color: active ? HudColors.cyan : HudColors.textMuted,
-                      size: 20),
-                  const SizedBox(height: 2),
-                  Text(_items[i].$2,
-                      style: HudTextStyles.mono(7,
-                          color:
-                              active ? HudColors.cyan : HudColors.textMuted)),
-                ],
-              ),
-            ),
-          );
-        }),
-      ),
-    );
-  }
-}

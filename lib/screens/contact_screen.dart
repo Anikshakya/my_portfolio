@@ -396,8 +396,7 @@ class _ContactScreenState extends State<ContactScreen> {
             ),
           ),
         ),
-        // ── Footer Section ──────────────────────────────────
-        _footer(),
+        if (isWide) _footer(),
       ],
     );
   }
@@ -407,7 +406,7 @@ class _ContactScreenState extends State<ContactScreen> {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(24, 20, 24, 58),
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
       decoration: const BoxDecoration(
         color: Color(0xD9020208),
         border: Border(top: BorderSide(color: Color(0x4D00F0FF))),
