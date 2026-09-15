@@ -809,38 +809,6 @@ class _TopBarState extends State<_TopBar> {
               ),
             ),
           ),
-
-          const SizedBox(width: 8),
-
-          // ---------------------------------------------------------------
-          // CURRENT SECTION
-          // ---------------------------------------------------------------
-
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 8,
-              vertical: 3,
-            ),
-
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: HudColors.cyan.withValues(
-                  alpha: 0.25,
-                ),
-              ),
-              borderRadius:
-                  BorderRadius.circular(3),
-              color: HudColors.cyan.withValues(
-                alpha: 0.05,
-              ),
-            ),
-
-            child: Text(
-              widget.sectionNames[
-                  widget.currentIndex],
-              style: HudTextStyles.mono(9),
-            ),
-          ),
         ],
       ),
     );

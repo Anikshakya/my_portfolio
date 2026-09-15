@@ -16,7 +16,7 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-# DNS CONFIG
+# DNS CONFIG after add records in cloudflare
 Type	Name	Content
 A	@	185.199.108.153
 A	@	185.199.109.153
@@ -34,7 +34,7 @@ CNAME	www	anikshakys.github.io
 
 flutter clean
 flutter pub get
-flutter build web --release --base-href "/"
+flutter build web --release
 
 
 
@@ -63,3 +63,5 @@ Select:
 Leave:
 
 ☐ Require actions to be pinned to a full-length commit SHA
+
+flutter build web --release --base-href "/"
