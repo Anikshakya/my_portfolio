@@ -1,11 +1,11 @@
 {
-    "name": "portfolio_flutter",
-    "short_name": "portfolio_flutter",
+    "name": "Anik Shakya — Flutter Developer",
+    "short_name": "Anik Shakya",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#020208",
+    "theme_color": "#020208",
+    "description": "Portfolio of Anik Shakya, a Senior Flutter Developer specializing in modern mobile and web applications.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
