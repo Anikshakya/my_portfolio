@@ -332,19 +332,19 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icons.chat_bubble_outline,
             onTap: widget.onContactTap,
           ),
-          _SecondaryButton(
-            text: "View Resume",
-            icon: Icons.download_rounded,
-            onTap: () async{
-              var downloadUrl ='https://drive.google.com/uc?export=download&id=1DVXMgBsQ2_-sZ87uilSv-n76lRJsrCFP';
-              final uri = Uri.parse(downloadUrl);
+          // _SecondaryButton(
+          //   text: "View Resume",
+          //   icon: Icons.download_rounded,
+          //   onTap: () async{
+          //     var downloadUrl ='https://drive.google.com/uc?export=download&id=1DVXMgBsQ2_-sZ87uilSv-n76lRJsrCFP';
+          //     final uri = Uri.parse(downloadUrl);
 
-              await launchUrl(
-                uri,
-                mode: LaunchMode.externalApplication,
-              );
-            },
-          ),
+          //     await launchUrl(
+          //       uri,
+          //       mode: LaunchMode.externalApplication,
+          //     );
+          //   },
+          // ),
         ],
       ),
     );
