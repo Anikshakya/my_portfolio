@@ -342,7 +342,15 @@ class _HomeScreenState extends State<HomeScreen> {
           _SecondaryButton(
             text: "View Resume",
             icon: Icons.download_rounded,
-            onTap: () => _launch('https://github.com/AnikShakya'),
+            onTap: () async{
+              var downloadUrl ='https://drive.google.com/uc?export=download&id=1DVXMgBsQ2_-sZ87uilSv-n76lRJsrCFP';
+              final uri = Uri.parse(downloadUrl);
+
+              await launchUrl(
+                uri,
+                mode: LaunchMode.externalApplication,
+              );
+            },
           ),
         ],
       ),
