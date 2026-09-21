@@ -97,13 +97,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  Future<void> _launch(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
-
   ScreenSize _getScreenSize(double width) {
     if (width >= 1024) return ScreenSize.desktop;
     if (width >= 650) return ScreenSize.tablet;
